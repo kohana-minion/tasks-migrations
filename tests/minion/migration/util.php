@@ -4,7 +4,9 @@
  * Testcase for Minion_Migration_Util
  *
  * @group minion
- **/
+ * @group minion.tasks
+ * @group minion.tasks.migrations
+ */
 class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 
 	/**
