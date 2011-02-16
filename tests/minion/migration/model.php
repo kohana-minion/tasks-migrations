@@ -4,9 +4,33 @@
  * Test for the migration model
  *
  * @group minion
- **/
+ * @group minion.tasks
+ * @group minion.tasks.migrations
+ */
 class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 {
+	/**
+	 * Runs before the test class as a whole is ran
+	 * Creates the test table
+	 */
+	public static function setUpBeforeClass()
+	{
+		$sql = file_get_contents(Kohana::find_file('', 'minion_schema', 'sql'));
+
+		$sql = str_replace('`minion_migrations`', '`test_minion_migrations`', $sql);
+
+		Database::instance()->query(NULL, 'DROP TABLE IF EXISTS `test_minion_migrations`');
+		Database::instance()->query(NULL, $sql);
+	}
+
+	/**
+	 * Removes the test tables after the tests have finished
+	 */
+	public static function tearDownAfterClass()
+	{
+		Database::instance()->query(NULL, 'DROP TABLE `test_minion_migrations`');
+	}
+
 	/**
 	 * Gets the dataset that should be used to populate db
 	 *
