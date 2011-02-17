@@ -89,6 +89,140 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 		);
 	}
 
+	/**
+	 * Provides test data for test_fetch_required_migrations
+	 *
+	 * @return array
+	 */
+	public function provider_fetch_required_migrations()
+	{
+		return array(
+			// Test going up in a specific group
+			array(
+				array (
+					array (
+						'timestamp' => '20101215165000',
+						'description' => 'add-name-column-to-members',
+						'group' => 'app',
+						'applied' => '0',
+						'id' => 'app:20101215165000',
+					),
+					array (
+						'timestamp' => '20101216000000',
+						'description' => 'add-index-on-name',
+						'group' => 'app',
+						'applied' => '0',
+						'id' => 'app:20101216000000',
+					),
+				),
+				'app',
+				TRUE,
+			),
+			// Testing going down with a specific group
+			array(
+				array (
+					array (
+						'timestamp' => '20101216080000',
+						'description' => 'remove-password-salt-column',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101216080000',
+					),
+					array (
+						'timestamp' => '20101215164400',
+						'description' => 'create-tables',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101215164400',
+					),
+				),
+				'app',
+				FALSE
+			),
+			// Testing going up across all groups
+			array(
+				array (
+					array (
+						'timestamp' => '20101215165000',
+						'description' => 'add-name-column-to-members',
+						'group' => 'app',
+						'applied' => '0',
+						'id' => 'app:20101215165000',
+					),
+					array (
+						'timestamp' => '20101216000000',
+						'description' => 'add-index-on-name',
+						'group' => 'app',
+						'applied' => '0',
+						'id' => 'app:20101216000000',
+					),
+					array (
+						'timestamp' => '20101226112100',
+						'description' => 'add-pk',
+						'group' => 'dblogger',
+						'applied' => '0',
+						'id' => 'dblogger:20101226112100',
+					),
+				),
+				NULL,
+				TRUE
+			),
+			// Testing going down across all groups
+			array(
+				array (
+					array (
+						'timestamp' => '20101225000000',
+						'description' => 'remove-unique-index',
+						'group' => 'dblogger',
+						'applied' => '1',
+						'id' => 'dblogger:20101225000000',
+					),
+					array (
+						'timestamp' => '20101216080000',
+						'description' => 'remove-password-salt-column',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101216080000',
+					),
+					array (
+						'timestamp' => '20101215164500',
+						'description' => 'create-table',
+						'group' => 'dblogger',
+						'applied' => '1',
+						'id' => 'dblogger:20101215164500',
+					),
+					array (
+						'timestamp' => '20101215164400',
+						'description' => 'create-tables',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101215164400',
+					),
+				),
+				NULL,
+				FALSE
+			)
+		);
+	}
+
+	/**
+	 * Test that migrations are fetched in the right order depending on what the target is
+	 *
+	 * @test
+	 * @dataProvider provider_fetch_required_migrations
+	 * @covers Model_Minion_Migration::fetch_required_migrations
+	 * @param array        An expected resultset
+	 * @param string|array A group, or groups to get migrations for
+	 * @param bool|string  Target to migrate to
+	 */
+	public function test_fetch_required_migrations($expected, $group, $target)
+	{
+		$this->assertSame(
+			$expected,
+			$this->getModel()->fetch_required_migrations($group, $target)
+		);
+	}
+
 
 	/**
 	 * Provides test data for test_get_migration
