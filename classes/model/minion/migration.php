@@ -285,12 +285,23 @@ class Model_Minion_Migration extends Model
 	 */
 	public function fetch_required_migrations($group = NULL, $target = TRUE)
 	{
-		$migrations = array();
+		$migrations     = array();
+		$current_groups = $this->fetch_groups(TRUE);
+
+		foreach ( (array) $group as $group_name)
+		{
+			if ( ! isset($current_groups[$group_name]))
+			{
+				throw new Kohana_Exception("Migration group :group does not exist", array(':group' => $group_name));
+			}
+		}
 
 		$query = $this->_select();
 
 		if (is_bool($target))
 		{
+			$up = $target;
+
 			// If we want to limit this migration to certain groups
 			if ($group !== NULL)
 			{
@@ -303,21 +314,6 @@ class Model_Minion_Migration extends Model
 					$query->where('group', '=', $group);
 				}
 			}
-
-			// If we're migrating up
-			if ($target === TRUE)
-			{
-				$query
-					->where('applied', '=', 0)
-					->order_by('timestamp', 'ASC');
-			}
-			// If we're migrating down
-			else
-			{
-				$query
-					->where('applied', '>', 0)
-					->order_by('timestamp', 'DESC');
-			}
 		}
 		else
 		{
@@ -327,19 +323,133 @@ class Model_Minion_Migration extends Model
 
 			if ($up)
 			{
-				$query
-					->where('timestamp', '<=', $target)
-					->where('applied', '=', 0)
-					->order_by('timestamp', 'ASC');
+				$query->where('timestamp', '<=', $target);
 			}
 			else
 			{
-				$query
-					->where('timestamp', '>', $target)
-					->order_by('timestamp', 'DESC');
+				$query->where('timestamp', '>', $target);
+			}
+		}
+		
+		// If we're migrating up
+		if ($up)
+		{
+			$query
+				->where('applied', '=', 0)
+				->order_by('timestamp', 'ASC');
+		}
+		// If we're migrating down
+		else
+		{
+			$query
+				->where('applied', '>', 0)
+				->order_by('timestamp', 'DESC');
+		}
+
+
+		return $query->execute($this->_db)->as_array();
+	}
+
+	/**
+	 * Resolve a (potentially relative) target for a group to a definite timestamp
+	 *
+	 * @param string     Group name
+	 * @param string|int Target
+	 * @return array First element timestamp, second is boolean (TRUE if up, FALSE if down)
+	 */
+	public function resolve_target($group, $target)
+	{
+		if (empty($group))
+		{
+			throw new Kohana_Exception("No group specified");
+		}
+
+		if (is_array($group))
+		{
+			if (count($group) > 1)
+			{
+				throw new Kohana_Exception("A target can only be expressed for a single group");
+			}
+
+			$group = $group[0];
+		}
+
+		$amount        = NULL;
+		$query         = $this->_select();
+		$statuses      = $this->fetch_current_versions();
+		$target        = (string) $target;
+		$group_applied = isset($statuses[$group]);
+		$up            = NULL;
+		$timestamp     = $group_applied ? $statuses[$group]['timestamp'] : NULL;
+	
+		// If this target is relative to the current state of the group
+		if ($target[0] === '+' OR $target[0] === '-')
+		{
+			$amount     = substr($target, 1);
+			$up         = $target[0] === '+';
+			
+			if ($up)
+			{
+				if ($group_applied)
+				{
+					$query->where('timestamp', '>', $timestamp);
+				}
+			}
+			else
+			{
+				if ( ! $group_applied)
+				{
+					throw new Kohana_Exception(
+						"Cannot migrate group :group down as none of its migrations have been applied", 
+						array(':group' => $group)
+					);
+				}
+
+				$query->where('timestamp', '<=', $timestamp);
+			}
+
+			$query->limit($amount);
+		}
+		// Else this is an absolute target
+		else
+		{
+			if ($group_applied)
+			{
+				$up = ( (int) $timestamp < (int) $target);
+
+				$query->where('timestamp', ($up ? '>' : '<='), $timestamp);
+			}
+			else
+			{
+				$up = TRUE;
+			}
+
+			if ($up)
+			{
+				$query->where('timestamp', '<=', $target);
+			}
+			else
+			{
+				$query->where('timestamp', '>', $target);
 			}
 		}
 
-		return $query->execute($this->_db)->as_array();
+		if ( ! $up)
+		{
+			$query->where('applied', '>', 0);
+		}
+
+		$query->where('group', '=', $group);
+
+		$query->order_by('timestamp', ($up ? 'ASC' : 'DESC'));
+
+		$results = $query->execute($this->_db);
+
+		if ($amount !== NULL AND count($results) != $amount)
+		{
+			return array(NULL, $up);
+		}
+
+		return array((float) $query->execute($this->_db)->get('timestamp'), $up);
 	}
 }

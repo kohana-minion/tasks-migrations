@@ -99,15 +99,15 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 		return array(
 			// Test going up in a specific group
 			array(
-				array (
-					array (
+				array(
+					array(
 						'timestamp' => '20101215165000',
 						'description' => 'add-name-column-to-members',
 						'group' => 'app',
 						'applied' => '0',
 						'id' => 'app:20101215165000',
 					),
-					array (
+					array(
 						'timestamp' => '20101216000000',
 						'description' => 'add-index-on-name',
 						'group' => 'app',
@@ -120,15 +120,15 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			),
 			// Testing going down with a specific group
 			array(
-				array (
-					array (
+				array(
+					array(
 						'timestamp' => '20101216080000',
 						'description' => 'remove-password-salt-column',
 						'group' => 'app',
 						'applied' => '1',
 						'id' => 'app:20101216080000',
 					),
-					array (
+					array(
 						'timestamp' => '20101215164400',
 						'description' => 'create-tables',
 						'group' => 'app',
@@ -141,22 +141,22 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			),
 			// Testing going up across all groups
 			array(
-				array (
-					array (
+				array(
+					array(
 						'timestamp' => '20101215165000',
 						'description' => 'add-name-column-to-members',
 						'group' => 'app',
 						'applied' => '0',
 						'id' => 'app:20101215165000',
 					),
-					array (
+					array(
 						'timestamp' => '20101216000000',
 						'description' => 'add-index-on-name',
 						'group' => 'app',
 						'applied' => '0',
 						'id' => 'app:20101216000000',
 					),
-					array (
+					array(
 						'timestamp' => '20101226112100',
 						'description' => 'add-pk',
 						'group' => 'dblogger',
@@ -169,29 +169,29 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			),
 			// Testing going down across all groups
 			array(
-				array (
-					array (
+				array(
+					array(
 						'timestamp' => '20101225000000',
 						'description' => 'remove-unique-index',
 						'group' => 'dblogger',
 						'applied' => '1',
 						'id' => 'dblogger:20101225000000',
 					),
-					array (
+					array(
 						'timestamp' => '20101216080000',
 						'description' => 'remove-password-salt-column',
 						'group' => 'app',
 						'applied' => '1',
 						'id' => 'app:20101216080000',
 					),
-					array (
+					array(
 						'timestamp' => '20101215164500',
 						'description' => 'create-table',
 						'group' => 'dblogger',
 						'applied' => '1',
 						'id' => 'dblogger:20101215164500',
 					),
-					array (
+					array(
 						'timestamp' => '20101215164400',
 						'description' => 'create-tables',
 						'group' => 'app',
@@ -201,7 +201,27 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 				),
 				NULL,
 				FALSE
-			)
+			),
+			array(
+				array(
+					array(
+						'timestamp' => '20101216080000',
+						'description' => 'remove-password-salt-column',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101216080000',
+					),
+					array(
+						'timestamp' => '20101215164400',
+						'description' => 'create-tables',
+						'group' => 'app',
+						'applied' => '1',
+						'id' => 'app:20101215164400',
+					),
+				),
+				'app',
+				20101216080000
+			),
 		);
 	}
 
@@ -353,6 +373,62 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 		$this->assertSame(
 			$expected,
 			$model->get_migration($migration['group'], $migration['timestamp'])
+		);
+	}
+
+	/**
+	 * Provides test data for test_resolve_target()
+	 *
+	 * @return array
+	 */
+	public function provider_resolve_target()
+	{
+		return array(
+			array(
+				array(20101216080000, FALSE),
+				'app',
+				'-1'
+			),
+			array(
+				array(NULL, FALSE),
+				'dblogger',
+				'-10'
+			),
+			array(
+				array(20101226112100, TRUE),
+				'dblogger',
+				'+1',
+			),
+			array(
+				array(NULL, TRUE),
+				'app',
+				'+10'
+			),
+			array(
+				array(NULL, TRUE),
+				'dblogger',
+				'+100'
+			),
+		);
+	}
+
+	/**
+	 * Test that we can resolve a target version for a group.
+	 *
+	 * Target version can be relative (+migrations_up / -migrations_down) or absolute (i.e. timestamp)
+	 *
+	 * @test
+	 * @dataProvider provider_resolve_target
+	 * @covers Model_Minion_Migration::resolve_target
+	 * @param array  Expected output
+	 * @param string Group name
+	 * @param string Target version
+	 */
+	public function test_resolve_target($expected, $group, $target)
+	{
+		$this->assertSame(
+			$expected,
+			$this->getModel()->resolve_target($group, $target)
 		);
 	}
 }
