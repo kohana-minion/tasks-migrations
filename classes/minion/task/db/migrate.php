@@ -7,10 +7,10 @@
  *
  * Available config options are:
  *
- * --versions=[location:]version
+ * --versions=[group:]version
  *
- *  Used to specify the version to migrate the database to.  The location prefix 
- *  is used to specify the target version of an individual location. Version
+ *  Used to specify the version to migrate the database to.  The group prefix 
+ *  is used to specify the target version of an individual group. Version
  *  specifies the target version, which can be either:
  *
  *     * A migration version (migrates up/down to that version)
@@ -19,16 +19,16 @@
  *
  *  An example of a migration version is 20101229015800
  *
- *  If you specify TRUE / FALSE without a location then the default migration 
- *  direction for locations without a specified version will be up / down respectively.
+ *  If you specify TRUE / FALSE without a group then the default migration 
+ *  direction for groups without a specified version will be up / down respectively.
  *
- *  If you're only specifying a migration version then you *must* specify a location
+ *  If you're only specifying a migration version then you *must* specify a group
  *
- * --locations=location[,location2[,location3...]]
+ * --groups=group[,group2[,group3...]]
  *
- *  A list of locations (under the migrations folder in the cascading 
+ *  A list of groups (under the migrations folder in the cascading 
  *  filesystem) that will be used to source migration files.  By default 
- *  migrations will be loaded from all available locations
+ *  migrations will be loaded from all available groups
  *
  * --dry-run
  *
@@ -57,7 +57,7 @@ class Minion_Task_Db_Migrate extends Minion_Task
 	 */
 	protected $_config = array(
 		'versions',
-		'locations',
+		'groups',
 		'dry-run',
 		'quiet'
 	);
@@ -72,13 +72,13 @@ class Minion_Task_Db_Migrate extends Minion_Task
 		$k_config = Kohana::config('minion/migration');
 
 		// Grab user input, using sensible defaults
-		$specified_locations = Arr::get($config, 'locations',   NULL);
+		$specified_groups = Arr::get($config, 'groups',   NULL);
 		$versions            = Arr::get($config, 'versions',    NULL);
 		$dry_run             = array_key_exists('dry-run', $config);
 		$quiet               = array_key_exists('quiet', $config);
 
 		$targets   = $this->_parse_target_versions($versions);
-		$locations = $this->_parse_locations($specified_locations);
+		$groups = $this->_parse_groups($specified_groups);
 
 		$db        = Database::instance();
 		$model     = new Model_Minion_Migration($db);
@@ -96,8 +96,8 @@ class Minion_Task_Db_Migrate extends Minion_Task
 
 		try
 		{
-			// Run migrations for specified locations & versions
-			$manager->run_migration($locations, $targets, $this->_default_direction);
+			// Run migrations for specified groups & versions
+			$manager->run_migration($groups, $targets, $this->_default_direction);
 		}
 		catch(Minion_Migration_Exception $e)
 		{
@@ -112,39 +112,39 @@ class Minion_Task_Db_Migrate extends Minion_Task
 			->set('quiet', $quiet)
 			->set('dry_run_sql', $manager->get_dry_run_sql())
 			->set('executed_migrations', $manager->get_executed_migrations())
-			->set('location_versions', $model->fetch_current_versions());
+			->set('group_versions', $model->fetch_current_versions());
 
 		return $view;
 	}
 
 	/**
-	 * Parses a comma delimited set of locations and returns an array of them
+	 * Parses a comma delimited set of groups and returns an array of them
 	 *
-	 * @param  string Comma delimited string of locations
+	 * @param  string Comma delimited string of groups
 	 * @return array  Locations
 	 */
-	protected function _parse_locations($location)
+	protected function _parse_groups($group)
 	{
-		if (is_array($location))
-			return $location;
+		if (is_array($group))
+			return $group;
 
-		$location = trim($location);
+		$group = trim($group);
 
-		if (empty($location))
+		if (empty($group))
 			return array();
 
-		$locations = array();
-		$location  = explode(',', trim($location, ','));
+		$groups = array();
+		$group  = explode(',', trim($group, ','));
 
-		if ( ! empty($location))
+		if ( ! empty($group))
 		{
-			foreach ($location as $a_location)
+			foreach ($group as $a_group)
 			{
-				$locations[] = trim($a_location, '/');
+				$groups[] = trim($a_group, '/');
 			}
 		}
 
-		return $locations;
+		return $groups;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class Minion_Task_Db_Migrate extends Minion_Task
 	 *
 	 *    FALSE
 	 *
-	 *    {location}:(TRUE|FALSE|{migration_id})
+	 *    {group}:(TRUE|FALSE|{migration_id})
 	 *
 	 * @param  string Target version(s) specified by user
 	 * @return array  Versions
@@ -179,9 +179,9 @@ class Minion_Task_Db_Migrate extends Minion_Task
 
 			if (is_array($target))
 			{
-				list($location, $version) = $target;
+				list($group, $version) = $target;
 
-				$targets[$location] = $version;
+				$targets[$group] = $version;
 			}
 			else
 			{

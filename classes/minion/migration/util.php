@@ -30,7 +30,7 @@ class Minion_Migration_Util {
 			{
 				$migration = Minion_Migration_Util::get_migration_from_filename($file);
 
-				$migrations[$migration['location'].':'.$migration['timestamp']] = $migration;
+				$migrations[$migration['group'].':'.$migration['timestamp']] = $migration;
 			}
 		}
 
@@ -43,10 +43,10 @@ class Minion_Migration_Util {
 	 * Returns an array like:
 	 *
 	 *     array(
-	 *        'location'    => 'mylocation',
+	 *        'group'    => 'mygroup',
 	 *        'timestamp'   => '1293214439',
 	 *        'description' => 'initial-setup',
-	 *        'id'          => 'mylocation:1293214439'
+	 *        'id'          => 'mygroup:1293214439'
 	 *     );
 	 *
 	 * @param  string The migration's filename
@@ -57,33 +57,33 @@ class Minion_Migration_Util {
 		$migration = array();
 
 		// Get rid of the file's "migrations/" prefix, the file extension and then 
-		// the filename itself.  The "location" is essentially a slash delimited 
+		// the filename itself.  The "group" is essentially a slash delimited 
 		// path from the migrations folder to the migration file
-		$migration['location'] = dirname(substr($file, 11, -strlen(EXT)));
+		$migration['group'] = dirname(substr($file, 11, -strlen(EXT)));
 
 		list($migration['timestamp'], $migration['description']) 
 			= explode('_', basename($file, EXT), 2);
 
-		$migration['id'] = $migration['location'].':'.$migration['timestamp'];
+		$migration['id'] = $migration['group'].':'.$migration['timestamp'];
 
 		return $migration;
 	}
 
 	/**
-	 * Gets a migration file from its timestamp, description and location
+	 * Gets a migration file from its timestamp, description and group
 	 *
 	 * @param  integer|array The migration's ID or an array of timestamp, description
-	 * @param  string        The migration location
+	 * @param  string        The migration group
 	 * @return string        Path to the migration file
 	 */
 	public static function get_filename_from_migration(array $migration)
 	{
-		$location  = $migration['location'];
+		$group  = $migration['group'];
 		$migration = $migration['timestamp'].'_'.$migration['description'];
 
-		$location = ( ! empty($location)) ? (rtrim($location, '/').'/') : '';
+		$group = ( ! empty($group)) ? (rtrim($group, '/').'/') : '';
 
-		return $location.$migration.EXT;
+		return $group.$migration.EXT;
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Minion_Migration_Util {
 		}
 		else
 		{
-			$migration = str_replace('/', ' ', $migration['location']).'_'.$migration['timestamp'];
+			$migration = str_replace('/', ' ', $migration['group']).'_'.$migration['timestamp'];
 		}
 
 		return 'Migration_'.str_replace(array(' ', '-'), '_', ucwords($migration));

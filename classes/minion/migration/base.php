@@ -34,11 +34,11 @@ abstract class Minion_Migration_Base {
 	public function get_database_connection()
 	{
 		$config   = Kohana::config('minion/migration');
-		$location = $this->_info['location'];
+		$group = $this->_info['group'];
 
-		if (isset($config->location_connection[$location]))
+		if (isset($config->group_connection[$group]))
 		{
-			return $config->location_connection[$location];
+			return $config->group_connection[$group];
 		}
 
 		return Database::$default;

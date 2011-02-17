@@ -19,15 +19,15 @@ class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 		return array(
 			array(
 				array(
-					'myapp:015151051' => array('location' => 'myapp', 'description' => 'setup',        'timestamp' => '015151051', 'id' => 'myapp:015151051'),
-					'myapp:015161051' => array('location' => 'myapp', 'description' => 'add-comments', 'timestamp' => '015161051', 'id' => 'myapp:015161051'),
+					'myapp:015151051' => array('group' => 'myapp', 'description' => 'setup',        'timestamp' => '015151051', 'id' => 'myapp:015151051'),
+					'myapp:015161051' => array('group' => 'myapp', 'description' => 'add-comments', 'timestamp' => '015161051', 'id' => 'myapp:015161051'),
 				),
 				array(
 					'migrations/myapp' => array(
 						'migrations/myapp/015151051_setup.php' 
-							=> '/var/www/app/locations/myapp/migrations/myapp/015151051_setup.php',
+							=> '/var/www/app/groups/myapp/migrations/myapp/015151051_setup.php',
 						'migrations/myapp/015161051_add-comments.php' 
-							=> '/var/www/app/locations/myapp/migrations/myapp/015161051_add-comments.php',
+							=> '/var/www/app/groups/myapp/migrations/myapp/015161051_add-comments.php',
   					),
 				)
 			),
@@ -62,7 +62,7 @@ class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 		return array(
 			array(
 				array(
-					'location'    => 'myapp',
+					'group'    => 'myapp',
 					'description' => 'initial-setup',
 					'timestamp'   => '1293214439',
 					'id'          => 'myapp:1293214439',
@@ -101,7 +101,7 @@ class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 			array(
 				'myapp/1293214439_initial-setup.php',
 				array(
-					'location'    => 'myapp',
+					'group'    => 'myapp',
 					'timestamp'   => '1293214439',
 					'description' => 'initial-setup',
 					'id'          => 'myapp:1293214439'
@@ -120,13 +120,13 @@ class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 	 * @dataProvider   provider_get_filename_from_migration
 	 * @param  string  Expected output
 	 * @param  mixed   Migration id
-	 * @param  mixed   location
+	 * @param  mixed   group
 	 */
-	public function test_get_filename_from_migration($expected, $migration, $location)
+	public function test_get_filename_from_migration($expected, $migration, $group)
 	{
 		$this->assertSame(
 			$expected, 
-			Minion_Migration_Util::get_filename_from_migration($migration, $location)
+			Minion_Migration_Util::get_filename_from_migration($migration, $group)
 		);
 	}
 
@@ -144,7 +144,7 @@ class Minion_Migration_UtilTest extends Kohana_Unittest_TestCase {
 			),
 			array(
 				'Migration_Kohana_201012290258',
-				array('location' => 'kohana', 'timestamp' => '201012290258'),
+				array('group' => 'kohana', 'timestamp' => '201012290258'),
 			),
 		);
 	}

@@ -116,49 +116,49 @@ class Minion_Migration_Manager {
 	}
 
 	/**
-	 * Run migrations in the specified locations so as to reach specified targets
+	 * Run migrations in the specified groups so as to reach specified targets
 	 *
 	 * There are three methods for specifying target versions:
 	 *
-	 * 1. Pass them in with the array of locations, i.e.
+	 * 1. Pass them in with the array of groups, i.e.
 	 *
 	 *     array(
-	 *       location => target_version
+	 *       group => target_version
 	 *     )
 	 *
 	 * 2. Pass them in separately, with param1 containing an array of 
-	 * locations like:
+	 * groups like:
 	 *
 	 *     array(
-	 *       location,
-	 *       location2,
+	 *       group,
+	 *       group2,
 	 *     )
 	 *
 	 * And param2 containing an array structured in the same way as in #1
 	 *
 	 * 3. Perform a mix of the above two methods
 	 *
-	 * It may seem odd to use two arrays to specify locations and versions, but 
-	 * it's this way to allow users to upgrade / downgrade all locations while 
-	 * migrating a specific location to a specific version
+	 * It may seem odd to use two arrays to specify groups and versions, but 
+	 * it's this way to allow users to upgrade / downgrade all groups while 
+	 * migrating a specific group to a specific version
 	 *
-	 * If no locations are specified then migrations from all locations will be 
+	 * If no groups are specified then migrations from all groups will be 
 	 * run and be brought up to the latest available version
 	 *
-	 * @param  array   Set of locations to update, empty array means all
-	 * @param  array   Versions for specified locations
+	 * @param  array   Set of groups to update, empty array means all
+	 * @param  array   Versions for specified groups
 	 * @param  boolean The default direction (up/down) for migrations without a specific version
 	 * @return array   Array of all migrations that were successfully applied
 	 */
-	public function run_migration(array $locations = array(), $versions = array(), $default_direction = TRUE)
+	public function run_migration(array $groups = array(), $versions = array(), $default_direction = TRUE)
 	{
-		$migrations = $this->_model->fetch_required_migrations($locations, $versions, $default_direction);
+		$migrations = $this->_model->fetch_required_migrations($groups, $versions, $default_direction);
 
-		foreach ($migrations as $path => $location)
+		foreach ($migrations as $path => $group)
 		{
-			$method = $location['direction'] ? 'up' : 'down';
+			$method = $group['direction'] ? 'up' : 'down';
 
-			foreach ($location['migrations'] as $migration)
+			foreach ($group['migrations'] as $migration)
 			{
 				$filename  = Minion_Migration_Util::get_filename_from_migration($migration);
 
@@ -198,7 +198,7 @@ class Minion_Migration_Manager {
 				}
 				else
 				{
-					$this->_model->mark_migration($migration, $location['direction']);
+					$this->_model->mark_migration($migration, $group['direction']);
 				}
 
 				$this->_executed_migrations[] = $migration;

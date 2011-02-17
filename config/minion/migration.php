@@ -2,8 +2,8 @@
 
 
 return array(
-	// A mapping of location_connections => db_connection to use
-	'location_connection' => array(
+	// A mapping of group_connections => db_connection to use
+	'group_connection' => array(
 		
 	),
 );

@@ -5,15 +5,15 @@
  *
  * Available config options are:
  *
- * --location=path/to/migration/location
+ * --group=path/to/migration/group
  *  
- *  This is a required config option, use it specify in which location the 
+ *  This is a required config option, use it specify in which group the 
  *  migration should be stored.  Due to the nature of the cascading filesystem 
  *  minion doesn't automatically know where a migration is stored so make sure 
  *  you pass in the full path to your migrations folder, e.g.
  *
- *  # The location of the migrations folder is modules/myapp/migrations/myapp/
- *  --location=modules/myapp/migrations/myapp/
+ *  # The group of the migrations folder is modules/myapp/migrations/myapp/
+ *  --group=modules/myapp/migrations/myapp/
  *
  *  On nix based systems you should be able to tab complete the path
  *
@@ -34,7 +34,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 * @var array
 	 */
 	protected $_config = array(
-		'location',
+		'group',
 		'description'
 	);
 
@@ -45,19 +45,19 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	public function execute(array $config)
 	{
-		if (empty($config['location']) OR empty($config['description']))
+		if (empty($config['group']) OR empty($config['description']))
 		{
-			return 'Please provide --location and --description'.PHP_EOL.
+			return 'Please provide --group and --description'.PHP_EOL.
 			       'See help for more info'.PHP_EOL;
 		}
 
-		$location    = rtrim(realpath($config['location']), '/').'/';
+		$group    = rtrim(realpath($config['group']), '/').'/';
 		$description = $config['description'];
 
 		// {year}{month}{day}{hour}{minute}{second}
 		$time  = date('YmdHis');
-		$class = $this->_generate_classname($location, $time);
-		$file  = $this->_generate_filename($location, $time, $description);
+		$class = $this->_generate_classname($group, $time);
+		$file  = $this->_generate_filename($group, $time, $description);
 
 
 		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
@@ -71,20 +71,20 @@ class Minion_Task_Db_Generate extends Minion_Task
 	}
 
 	/**
-	 * Generate a class name from the location
+	 * Generate a class name from the group
 	 *
-	 * @param  string location
+	 * @param  string group
 	 * @param  string Timestamp
 	 * @return string Class name
 	 */
-	protected function _generate_classname($location, $time)
+	protected function _generate_classname($group, $time)
 	{
 		// Chop up everything up until the relative path
-		$location = substr($location, strrpos($location, 'migrations/') + 11);
+		$group = substr($group, strrpos($group, 'migrations/') + 11);
 
-		$class = ucwords(str_replace('/', ' ', $location));
+		$class = ucwords(str_replace('/', ' ', $group));
 
-		// If location is empty then we want to avoid double underscore in the 
+		// If group is empty then we want to avoid double underscore in the 
 		// class name
 		if ( ! empty($class))
 		{
@@ -97,18 +97,18 @@ class Minion_Task_Db_Generate extends Minion_Task
 	}
 
 	/**
-	 * Generates a filename from the location, time and description
+	 * Generates a filename from the group, time and description
 	 *
 	 * @param  string Location to store migration
 	 * @param  string Timestamp
 	 * @param  string Description
 	 * @return string Filename
 	 */
-	public function _generate_filename($location, $time, $description)
+	public function _generate_filename($group, $time, $description)
 	{
 		$description = substr(strtolower($description), 0, 100);
 
-		return $location.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
+		return $group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
 	}
 
 }

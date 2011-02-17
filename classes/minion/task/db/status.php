@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Displays the current status of migrations in all locations
+ * Displays the current status of migrations in all groups
  *
  * This task takes no config options
  *
@@ -21,7 +21,7 @@ class Minion_Task_Db_Status extends Minion_Task {
 
 		$view = new View('minion/task/db/status');
 
-		$view->locations = $model->get_location_statuses();
+		$view->groups = $model->get_group_statuses();
 
 		echo $view;
 	}

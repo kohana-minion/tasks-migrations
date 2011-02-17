@@ -14,7 +14,7 @@ class Minion_Migration_Exception extends Kohana_Exception {
 	public function __construct($message, array $migration, array $variables = array(), $code = 0)
 	{
 		$variables[':migration-id']       = $migration['id'];
-		$variables[':migration-location'] = $migration['location'];
+		$variables[':migration-group'] = $migration['group'];
 
 		$this->_migration = $migration;
 
