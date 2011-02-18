@@ -8,4 +8,9 @@
 	<test_minion_migrations timestamp="20101215164500" description="create-table"                group="dblogger" applied="1" />
 	<test_minion_migrations timestamp="20101225000000" description="remove-unique-index"         group="dblogger" applied="1" />
 	<test_minion_migrations timestamp="20101226112100" description="add-pk"                      group="dblogger" applied="0" />
+	
+	<test_minion_migrations timestamp="20101526112100" description="add-col"                     group="minion" applied="0" />
+	
+	<test_minion_migrations timestamp="20101536112100" description="add-aaa"                     group="done" applied="1" />
+	<test_minion_migrations timestamp="20101546112100" description="add-bbb"                     group="done" applied="1" />
 </dataset>

@@ -66,12 +66,12 @@ class Model_Minion_Migration extends Model
 	public function get_group_statuses()
 	{
 		// Start out using all the installed groups
-		$groups = $this->fetch_current_versions('group', 'id');
+		$groups = $this->fetch_current_versions('group');
 		$available = $this->available_migrations();
 
 		foreach ($available as $migration)
 		{
-			if (array_key_exists($migration['id'], $groups))
+			if (array_key_exists($migration['group'], $groups))
 			{
 				continue;
 			}
@@ -283,12 +283,13 @@ class Model_Minion_Migration extends Model
 	 * @param string  The groups to get migrations for
 	 * @param mixed   Target version
 	 */
-	public function fetch_required_migrations($group = NULL, $target = TRUE)
+	public function fetch_required_migrations(array $group, $target = TRUE)
 	{
 		$migrations     = array();
 		$current_groups = $this->fetch_groups(TRUE);
 
-		foreach ( (array) $group as $group_name)
+		// Make sure the group(s) exist
+		foreach ($group as $group_name)
 		{
 			if ( ! isset($current_groups[$group_name]))
 			{
@@ -303,25 +304,46 @@ class Model_Minion_Migration extends Model
 			$up = $target;
 
 			// If we want to limit this migration to certain groups
-			if ($group !== NULL)
+			if ( ! empty($group))
 			{
-				if (is_array($group))
+				if (count($group) > 1)
 				{
 					$query->where('group', 'IN', $group);
 				}
 				else
 				{
-					$query->where('group', '=', $group);
+					$query->where('group', '=', $group[0]);
 				}
 			}
 		}
-		else
+		// Relative up/down target
+		elseif (in_array($target[0], array('+', '-')))
 		{
 			list($target, $up) = $this->resolve_target($group, $target);
 
 			$query->where('group', '=', $group);
 
-			if ($up)
+			if( $target !== NULL)
+			{
+				if ($up)
+				{
+					$query->where('timestamp', '<=', $target);
+				}
+				else
+				{
+					$query->where('timestamp', '>=', $target);
+				}
+			}
+			
+		}
+		// Absolute timestamp
+		else
+		{
+			$query->where('group', '=', $group);
+
+			$statuses = $this->fetch_current_versions();
+
+			if ($up = ($statuses[$group[0]] < $target))
 			{
 				$query->where('timestamp', '<=', $target);
 			}
@@ -342,12 +364,13 @@ class Model_Minion_Migration extends Model
 		else
 		{
 			$query
-				->where('applied', '>', 0)
+				->where('applied', '=', 1)
 				->order_by('timestamp', 'DESC');
 		}
 
+		//var_dump($query->compile($this->_db));
 
-		return $query->execute($this->_db)->as_array();
+		return array($query->execute($this->_db)->as_array(), $up);
 	}
 
 	/**
@@ -374,70 +397,42 @@ class Model_Minion_Migration extends Model
 			$group = $group[0];
 		}
 
-		$amount        = NULL;
+		if( ! in_array($target[0], array('+', '-')))
+		{
+			throw new Kohana_Exception("Invalid relative target");
+		}
+
 		$query         = $this->_select();
 		$statuses      = $this->fetch_current_versions();
 		$target        = (string) $target;
 		$group_applied = isset($statuses[$group]);
-		$up            = NULL;
 		$timestamp     = $group_applied ? $statuses[$group]['timestamp'] : NULL;
-	
-		// If this target is relative to the current state of the group
-		if ($target[0] === '+' OR $target[0] === '-')
-		{
-			$amount     = substr($target, 1);
-			$up         = $target[0] === '+';
-			
-			if ($up)
-			{
-				if ($group_applied)
-				{
-					$query->where('timestamp', '>', $timestamp);
-				}
-			}
-			else
-			{
-				if ( ! $group_applied)
-				{
-					throw new Kohana_Exception(
-						"Cannot migrate group :group down as none of its migrations have been applied", 
-						array(':group' => $group)
-					);
-				}
-
-				$query->where('timestamp', '<=', $timestamp);
-			}
-
-			$query->limit($amount);
-		}
-		// Else this is an absolute target
-		else
+		$amount        = substr($target, 1);
+		$up            = $target[0] === '+';
+		
+		if ($up)
 		{
 			if ($group_applied)
 			{
-				$up = ( (int) $timestamp < (int) $target);
-
-				$query->where('timestamp', ($up ? '>' : '<='), $timestamp);
-			}
-			else
-			{
-				$up = TRUE;
-			}
-
-			if ($up)
-			{
-				$query->where('timestamp', '<=', $target);
-			}
-			else
-			{
-				$query->where('timestamp', '>', $target);
+				$query->where('timestamp', '>', $timestamp);
 			}
 		}
-
-		if ( ! $up)
+		else
 		{
-			$query->where('applied', '>', 0);
+			if ( ! $group_applied)
+			{
+				throw new Kohana_Exception(
+					"Cannot migrate group :group down as none of its migrations have been applied", 
+					array(':group' => $group)
+				);
+			}
+
+			$query
+				->where('applied', '=', 1)
+				->where('timestamp', '<=', $timestamp);
 		}
+
+		$query->limit($amount);
 
 		$query->where('group', '=', $group);
 
@@ -445,11 +440,13 @@ class Model_Minion_Migration extends Model
 
 		$results = $query->execute($this->_db);
 
+		//var_dump($query->compile($this->_db));
+
 		if ($amount !== NULL AND count($results) != $amount)
 		{
 			return array(NULL, $up);
 		}
 
-		return array((float) $query->execute($this->_db)->get('timestamp'), $up);
+		return array((string) $query->execute($this->_db)->get('timestamp'), $up);
 	}
 }

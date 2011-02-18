@@ -118,91 +118,60 @@ class Minion_Migration_Manager {
 	/**
 	 * Run migrations in the specified groups so as to reach specified targets
 	 *
-	 * There are three methods for specifying target versions:
 	 *
-	 * 1. Pass them in with the array of groups, i.e.
-	 *
-	 *     array(
-	 *       group => target_version
-	 *     )
-	 *
-	 * 2. Pass them in separately, with param1 containing an array of 
-	 * groups like:
-	 *
-	 *     array(
-	 *       group,
-	 *       group2,
-	 *     )
-	 *
-	 * And param2 containing an array structured in the same way as in #1
-	 *
-	 * 3. Perform a mix of the above two methods
-	 *
-	 * It may seem odd to use two arrays to specify groups and versions, but 
-	 * it's this way to allow users to upgrade / downgrade all groups while 
-	 * migrating a specific group to a specific version
-	 *
-	 * If no groups are specified then migrations from all groups will be 
-	 * run and be brought up to the latest available version
 	 *
 	 * @param  array   Set of groups to update, empty array means all
 	 * @param  array   Versions for specified groups
-	 * @param  boolean The default direction (up/down) for migrations without a specific version
 	 * @return array   Array of all migrations that were successfully applied
 	 */
-	public function run_migration(array $groups = array(), $versions = array(), $default_direction = TRUE)
+	public function run_migration($group = array(), $target = TRUE)
 	{
-		$migrations = $this->_model->fetch_required_migrations($groups, $versions, $default_direction);
+		list($migrations, $is_up) = $this->_model->fetch_required_migrations($group, $target);
 
-		foreach ($migrations as $path => $group)
+		$method = $is_up ? 'up' : 'down';
+
+		foreach ($migrations as $migration)
 		{
-			$method = $group['direction'] ? 'up' : 'down';
+			$filename  = Minion_Migration_Util::get_filename_from_migration($migration);
 
-			foreach ($group['migrations'] as $migration)
+			if ( ! ($file  = Kohana::find_file('migrations', $filename, FALSE)))
 			{
-				$filename  = Minion_Migration_Util::get_filename_from_migration($migration);
-
-				if ( ! ($file  = Kohana::find_file('migrations', $filename, FALSE)))
-				{
-					throw new Kohana_Exception(
-						'Cannot load migration :migration (:file)', 
-						array(
-							':migration' => $migration['id'], 
-							':file'      => $filename
-						)
-					);
-				}
-
-				$class = Minion_Migration_Util::get_class_from_migration($migration);
-
-				
-				include_once $file;
-
-				$instance = new $class($migration);
-
-				$db = $this->_get_db_instance($instance->get_database_connection());
-
-				try 
-				{
-					$instance->$method($db);
-				}
-				catch(Database_Exception $e)
-				{
-					throw new Minion_Migration_Exception($e->getMessage(), $migration);
-				}
-
-
-				if ($this->_dry_run)
-				{
-					$this->_dry_run_sql[$path][$migration['timestamp']] = $db->reset_query_stack();
-				}
-				else
-				{
-					$this->_model->mark_migration($migration, $group['direction']);
-				}
-
-				$this->_executed_migrations[] = $migration;
+				throw new Kohana_Exception(
+					'Cannot load migration :migration (:file)', 
+					array(
+						':migration' => $migration['id'], 
+						':file'      => $filename
+					)
+				);
 			}
+
+			$class = Minion_Migration_Util::get_class_from_migration($migration);
+
+			include_once $file;
+
+			$instance = new $class($migration);
+
+			$db = $this->_get_db_instance($instance->get_database_connection());
+
+			try 
+			{
+				$instance->$method($db);
+			}
+			catch(Database_Exception $e)
+			{
+				throw new Minion_Migration_Exception($e->getMessage(), $migration);
+			}
+
+			if ($this->_dry_run)
+			{
+				$this->_dry_run_sql[$path][$migration['timestamp']] = $db->reset_query_stack();
+			}
+			else
+			{
+				$this->_model->mark_migration($migration, $is_up);
+			}
+
+			$this->_executed_migrations[] = $migration;
 		}
 	}
 
@@ -243,6 +212,9 @@ class Minion_Migration_Manager {
 			elseif ($installed[$migration]['description'] !== $available[$migration]['description'])
 			{
 				$this->_model->update_migration($installed[$migration], $available[$migration]);
+			}
+			{
+			
 			}
 		}
 		

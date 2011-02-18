@@ -7,27 +7,21 @@
  *
  * Available config options are:
  *
- * --versions=[group:]version
+ * --migrate-down
  *
- *  Used to specify the version to migrate the database to.  The group prefix 
- *  is used to specify the target version of an individual group. Version
- *  specifies the target version, which can be either:
+ *   Migrate the group(s) down
  *
- *     * A migration version (migrates up/down to that version)
- *     * TRUE (runs all migrations to get to the latest version)
- *     * FALSE (undoes all appled migrations)
+ * --migrate-up
  *
- *  An example of a migration version is 20101229015800
+ *   Migrate the group(s) up
  *
- *  If you specify TRUE / FALSE without a group then the default migration 
- *  direction for groups without a specified version will be up / down respectively.
+ * --migrate-to=(timestamp|+up_migrations|down_migrations)
  *
- *  If you're only specifying a migration version then you *must* specify a group
+ *   Migrate to a specific timestamp, or up $up_migrations, or down $down_migrations
  *
  * --groups=group[,group2[,group3...]]
  *
- *  A list of groups (under the migrations folder in the cascading 
- *  filesystem) that will be used to source migration files.  By default 
+ *  A list of groups that will be used to source migration files.  By default 
  *  migrations will be loaded from all available groups
  *
  * --dry-run
@@ -44,20 +38,16 @@
  */
 class Minion_Task_Db_Migrate extends Minion_Task
 {
-
-	/*
-	 * The default direction for migrations, TRUE = up, FALSE = down
-	 * @var boolean
-	 */
-	protected $_default_direction = TRUE;
-
 	/**
 	 * A set of config options that this task accepts
 	 * @var array
 	 */
 	protected $_config = array(
-		'versions',
+		'group',
 		'groups',
+		'migrate-up',
+		'migrate-down',
+		'migrate-to',
 		'dry-run',
 		'quiet'
 	);
@@ -71,18 +61,35 @@ class Minion_Task_Db_Migrate extends Minion_Task
 	{
 		$k_config = Kohana::config('minion/migration');
 
-		// Grab user input, using sensible defaults
-		$specified_groups = Arr::get($config, 'groups',   NULL);
-		$versions            = Arr::get($config, 'versions',    NULL);
-		$dry_run             = array_key_exists('dry-run', $config);
-		$quiet               = array_key_exists('quiet', $config);
+		$groups  = Arr::get($config, 'group', Arr::get($config, 'groups', NULL));
+		$target  = Arr::get($config, 'migrate-to',  NULL);
 
-		$targets   = $this->_parse_target_versions($versions);
-		$groups = $this->_parse_groups($specified_groups);
+		$dry_run = array_key_exists('dry-run',      $config);
+		$quiet   = array_key_exists('quiet',        $config);
+		$up      = array_key_exists('migrate-up',   $config);
+		$down    = array_key_exists('migrate-down', $config);
+
+		$groups  = $this->_parse_groups($groups);
+
+		if ($target === NULL)
+		{
+			if ($up)
+			{
+				$target = TRUE;
+			}
+			elseif ($down)
+			{
+				$target = FALSE;
+			}
+			else
+			{
+				echo "No migration target specified\n";
+				return;
+			}
+		}
 
 		$db        = Database::instance();
 		$model     = new Model_Minion_Migration($db);
-
 
 		$model->ensure_table_exists();
 
@@ -91,13 +98,12 @@ class Minion_Task_Db_Migrate extends Minion_Task
 		$manager
 			// Sync the available migrations with those in the db
 			->sync_migration_files()
-
 			->set_dry_run($dry_run);
 
 		try
 		{
 			// Run migrations for specified groups & versions
-			$manager->run_migration($groups, $targets, $this->_default_direction);
+			$manager->run_migration($groups, $target);
 		}
 		catch(Minion_Migration_Exception $e)
 		{
@@ -105,7 +111,6 @@ class Minion_Task_Db_Migrate extends Minion_Task
 				->set('migration', $e->get_migration())
 				->set('error',     $e->getMessage());
 		}
-
 
 		$view = View::factory('minion/task/db/migrate')
 			->set('dry_run', $dry_run)

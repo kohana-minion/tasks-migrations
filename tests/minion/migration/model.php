@@ -66,7 +66,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		$migrations = $this->getModel()->fetch_all();
 
-		$this->assertSame(7, count($migrations));
+		$this->assertSame(10, count($migrations));
 	}
 
 	/**
@@ -84,6 +84,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			array (
 				'app'      => '20101216080000',
 				'dblogger' => '20101225000000',
+				'done'     => '20101546112100',
 			),
 			$versions
 		);
@@ -101,19 +102,22 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			array(
 				array(
 					array(
-						'timestamp' => '20101215165000',
-						'description' => 'add-name-column-to-members',
-						'group' => 'app',
-						'applied' => '0',
-						'id' => 'app:20101215165000',
+						array(
+							'timestamp' => '20101215165000',
+							'description' => 'add-name-column-to-members',
+							'group' => 'app',
+							'applied' => '0',
+							'id' => 'app:20101215165000',
+						),
+						array(
+							'timestamp' => '20101216000000',
+							'description' => 'add-index-on-name',
+							'group' => 'app',
+							'applied' => '0',
+							'id' => 'app:20101216000000',
+						),
 					),
-					array(
-						'timestamp' => '20101216000000',
-						'description' => 'add-index-on-name',
-						'group' => 'app',
-						'applied' => '0',
-						'id' => 'app:20101216000000',
-					),
+					TRUE
 				),
 				'app',
 				TRUE,
@@ -122,19 +126,22 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			array(
 				array(
 					array(
-						'timestamp' => '20101216080000',
-						'description' => 'remove-password-salt-column',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101216080000',
+						array(
+							'timestamp' => '20101216080000',
+							'description' => 'remove-password-salt-column',
+							'group' => 'app',
+							'applied' => '1',
+							'id' => 'app:20101216080000',
+						),
+						array(
+							'timestamp' => '20101215164400',
+							'description' => 'create-tables',
+							'group' => 'app',
+							'applied' => '1',
+							'id' => 'app:20101215164400',
+						),
 					),
-					array(
-						'timestamp' => '20101215164400',
-						'description' => 'create-tables',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101215164400',
-					),
+					FALSE
 				),
 				'app',
 				FALSE
@@ -143,26 +150,36 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			array(
 				array(
 					array(
-						'timestamp' => '20101215165000',
-						'description' => 'add-name-column-to-members',
-						'group' => 'app',
-						'applied' => '0',
-						'id' => 'app:20101215165000',
+						array(
+							'timestamp' => '20101215165000',
+							'description' => 'add-name-column-to-members',
+							'group' => 'app',
+							'applied' => '0',
+							'id' => 'app:20101215165000',
+						),
+						array(
+							'timestamp' => '20101216000000',
+							'description' => 'add-index-on-name',
+							'group' => 'app',
+							'applied' => '0',
+							'id' => 'app:20101216000000',
+						),
+						array(
+							'timestamp' => '20101226112100',
+							'description' => 'add-pk',
+							'group' => 'dblogger',
+							'applied' => '0',
+							'id' => 'dblogger:20101226112100',
+						),
+						array(
+							'timestamp' => '20101526112100',
+							'description' => 'add-col',
+							'group' => 'minion',
+							'applied' => '0',
+							'id' => 'minion:20101526112100',
+						),
 					),
-					array(
-						'timestamp' => '20101216000000',
-						'description' => 'add-index-on-name',
-						'group' => 'app',
-						'applied' => '0',
-						'id' => 'app:20101216000000',
-					),
-					array(
-						'timestamp' => '20101226112100',
-						'description' => 'add-pk',
-						'group' => 'dblogger',
-						'applied' => '0',
-						'id' => 'dblogger:20101226112100',
-					),
+					TRUE
 				),
 				NULL,
 				TRUE
@@ -171,57 +188,104 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 			array(
 				array(
 					array(
-						'timestamp' => '20101225000000',
-						'description' => 'remove-unique-index',
-						'group' => 'dblogger',
-						'applied' => '1',
-						'id' => 'dblogger:20101225000000',
+						array(
+							'timestamp' => '20101546112100',
+							'description' => 'add-bbb',
+							'group' => 'done',
+							'applied' => '1',
+							'id' => 'done:20101546112100'
+						),
+						array(
+							'timestamp' => '20101536112100',
+							'description' => 'add-aaa',
+							'group' => 'done',
+							'applied' => '1',
+							'id'=> 'done:20101536112100'
+						),
+						array(
+							'timestamp' => '20101225000000',
+							'description' => 'remove-unique-index',
+							'group' => 'dblogger',
+							'applied' => '1',
+							'id' => 'dblogger:20101225000000',
+						),
+						array(
+							'timestamp' => '20101216080000',
+							'description' => 'remove-password-salt-column',
+							'group' => 'app',
+							'applied' => '1',
+							'id' => 'app:20101216080000',
+						),
+						array(
+							'timestamp' => '20101215164500',
+							'description' => 'create-table',
+							'group' => 'dblogger',
+							'applied' => '1',
+							'id' => 'dblogger:20101215164500',
+						),
+						array(
+							'timestamp' => '20101215164400',
+							'description' => 'create-tables',
+							'group' => 'app',
+							'applied' => '1',
+							'id' => 'app:20101215164400',
+						),
 					),
-					array(
-						'timestamp' => '20101216080000',
-						'description' => 'remove-password-salt-column',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101216080000',
-					),
-					array(
-						'timestamp' => '20101215164500',
-						'description' => 'create-table',
-						'group' => 'dblogger',
-						'applied' => '1',
-						'id' => 'dblogger:20101215164500',
-					),
-					array(
-						'timestamp' => '20101215164400',
-						'description' => 'create-tables',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101215164400',
-					),
+					FALSE,
 				),
 				NULL,
 				FALSE
 			),
+			// Test migrating down to a specific version
 			array(
 				array(
 					array(
-						'timestamp' => '20101216080000',
-						'description' => 'remove-password-salt-column',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101216080000',
+						array(
+							'timestamp' => '20101216080000',
+							'description' => 'remove-password-salt-column',
+							'group' => 'app',
+							'applied' => '1',
+							'id' => 'app:20101216080000',
+						),
 					),
-					array(
-						'timestamp' => '20101215164400',
-						'description' => 'create-tables',
-						'group' => 'app',
-						'applied' => '1',
-						'id' => 'app:20101215164400',
-					),
+					FALSE
 				),
 				'app',
-				20101216080000
+				20101215164400
 			),
+			// Test migrating up from nothing to everything
+			array(
+				array(
+					array(
+						array(
+							'timestamp' => '20101526112100',
+							'description' => 'add-col',
+							'group' => 'minion',
+							'applied' => '0',
+							'id' => 'minion:20101526112100',
+						),
+					),
+					TRUE
+				),
+				'minion',
+				'+100'
+			),
+			array(
+				array(
+					array(
+						array(
+							'timestamp' => '20101546112100',
+							'description' => 'add-bbb',
+							'group' => 'done',
+							'applied' => '1',
+							'id' => 'done:20101546112100'
+						),
+					),
+					FALSE
+				),
+				'done',
+				'-1'
+			)
 		);
 	}
 
@@ -239,7 +303,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			$this->getModel()->fetch_required_migrations($group, $target)
+			$this->getModel()->fetch_required_migrations((array) $group, $target)
 		);
 	}
 
@@ -385,7 +449,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		return array(
 			array(
-				array(20101216080000, FALSE),
+				array('20101216080000', FALSE),
 				'app',
 				'-1'
 			),
@@ -395,7 +459,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 				'-10'
 			),
 			array(
-				array(20101226112100, TRUE),
+				array('20101226112100', TRUE),
 				'dblogger',
 				'+1',
 			),
@@ -428,7 +492,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			$this->getModel()->resolve_target($group, $target)
+			$this->getModel()->resolve_target((array) $group, $target)
 		);
 	}
 }
