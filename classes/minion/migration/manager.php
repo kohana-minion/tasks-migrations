@@ -213,11 +213,7 @@ class Minion_Migration_Manager {
 			{
 				$this->_model->update_migration($installed[$migration], $available[$migration]);
 			}
-			{
-			
-			}
 		}
-		
 
 		return $this;
 	}
