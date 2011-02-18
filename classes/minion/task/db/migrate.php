@@ -19,10 +19,18 @@
  *
  *   Migrate to a specific timestamp, or up $up_migrations, or down $down_migrations
  *
+ *   Cannot be used with --groups, must be used with --group
+ *
+ * --group=group
+ *
+ *   Specify a single group to perform migrations on
+ *
  * --groups=group[,group2[,group3...]]
  *
- *  A list of groups that will be used to source migration files.  By default 
- *  migrations will be loaded from all available groups
+ *   A list of groups that will be used to source migration files.  By default 
+ *   migrations will be loaded from all available groups.
+ *
+ *   Note, only --migrate-up and --migrate-down can be used with --groups
  *
  * --dry-run
  *
