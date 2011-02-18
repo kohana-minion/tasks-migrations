@@ -117,7 +117,7 @@ class Minion_Task_Db_Migrate extends Minion_Task
 			->set('quiet', $quiet)
 			->set('dry_run_sql', $manager->get_dry_run_sql())
 			->set('executed_migrations', $manager->get_executed_migrations())
-			->set('group_versions', $model->fetch_current_versions());
+			->set('group_versions', $model->get_group_statuses());
 
 		return $view;
 	}

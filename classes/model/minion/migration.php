@@ -368,8 +368,6 @@ class Model_Minion_Migration extends Model
 				->order_by('timestamp', 'DESC');
 		}
 
-		//var_dump($query->compile($this->_db));
-
 		return array($query->execute($this->_db)->as_array(), $up);
 	}
 
@@ -439,8 +437,6 @@ class Model_Minion_Migration extends Model
 		$query->order_by('timestamp', ($up ? 'ASC' : 'DESC'));
 
 		$results = $query->execute($this->_db);
-
-		//var_dump($query->compile($this->_db));
 
 		if ($amount !== NULL AND count($results) != $amount)
 		{
