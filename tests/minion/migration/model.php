@@ -303,7 +303,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			$this->getModel()->fetch_required_migrations((array) $group, $target)
+			$this->getModel()->fetch_required_migrations( (array) $group, $target)
 		);
 	}
 
@@ -492,7 +492,7 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			$this->getModel()->resolve_target((array) $group, $target)
+			$this->getModel()->resolve_target( (array) $group, $target)
 		);
 	}
 }
