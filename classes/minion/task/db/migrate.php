@@ -81,18 +81,13 @@ class Minion_Task_Db_Migrate extends Minion_Task
 
 		if ($target === NULL)
 		{
-			if ($up)
-			{
-				$target = TRUE;
-			}
-			elseif ($down)
+			if ($down)
 			{
 				$target = FALSE;
 			}
 			else
 			{
-				echo "No migration target specified\n";
-				return;
+				$target = TRUE;
 			}
 		}
 
