@@ -341,9 +341,10 @@ class Model_Minion_Migration extends Model
 		{
 			$query->where('group', '=', $group);
 
-			$statuses = $this->fetch_current_versions();
+			$statuses = $this->fetch_current_versions('group', 'timestamp');
+			$up = (empty($statuses) OR ($statuses[$group[0]] < $target));
 
-			if ($up = ($statuses[$group[0]] < $target))
+			if ($up)
 			{
 				$query->where('timestamp', '<=', $target);
 			}
