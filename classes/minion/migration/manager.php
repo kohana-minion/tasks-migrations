@@ -173,7 +173,7 @@ class Minion_Migration_Manager {
 
 			if ($this->_dry_run)
 			{
-				$this->_dry_run_sql[$path][$migration['timestamp']] = $db->reset_query_stack();
+				$this->_dry_run_sql[$migration['group']][$migration['timestamp']] = $db->reset_query_stack();
 			}
 			else
 			{
