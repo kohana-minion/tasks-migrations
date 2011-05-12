@@ -132,6 +132,15 @@ class Minion_Migration_Manager {
 
 		foreach ($migrations as $migration)
 		{
+			if ($method == 'down' AND $migration['timestamp'] <= Kohana::config('minion/migration')->lowest_migration)
+			{
+				Minion_CLI::write(
+					'You\'ve reached the lowest migration allowed by your config: '.Kohana::config('minion/migration')->lowest_migration,
+					'red'
+				);
+				return;
+			}
+
 			$filename  = Minion_Migration_Util::get_filename_from_migration($migration);
 
 			if ( ! ($file  = Kohana::find_file('migrations', $filename, FALSE)))
@@ -164,7 +173,7 @@ class Minion_Migration_Manager {
 
 			if ($this->_dry_run)
 			{
-				$this->_dry_run_sql[$path][$migration['timestamp']] = $db->reset_query_stack();
+				$this->_dry_run_sql[$migration['group']][$migration['timestamp']] = $db->reset_query_stack();
 			}
 			else
 			{
