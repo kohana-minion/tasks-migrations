@@ -444,6 +444,12 @@ class Model_Minion_Migration extends Model
 			return array(NULL, $up);
 		}
 
-		return array((string) $query->execute($this->_db)->get('timestamp'), $up);
+		// Seek to the requested row
+		for ($i = 0; $i < $amount - 1; $i++)
+		{
+			$results->next();
+		}
+
+		return array((string) $results->get('timestamp'), $up);
 	}
 }
