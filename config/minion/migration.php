@@ -7,7 +7,7 @@ return array(
 		
 	),
 
-	'default_path' => 'migrations/',
+	'default_path' => 'application/migrations/',
 
 	/**
 	 * This specifies which migration should be the "base", in timestamp form.
