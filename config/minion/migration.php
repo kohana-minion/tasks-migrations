@@ -6,6 +6,9 @@ return array(
 	'group_connection' => array(
 		
 	),
+
+	'default_path' => 'migrations/',
+
 	/**
 	 * This specifies which migration should be the "base", in timestamp form.
 	 * This migration will not be run when --migrate-down is called

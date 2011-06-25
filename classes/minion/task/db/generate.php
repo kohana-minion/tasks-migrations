@@ -51,7 +51,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 			       'See help for more info'.PHP_EOL;
 		}
 
-		$group    = rtrim(realpath($config['group']), '/').'/';
+		$group    = $config['group'].'/';
 		$description = $config['description'];
 
 		// {year}{month}{day}{hour}{minute}{second}
@@ -79,9 +79,6 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	protected function _generate_classname($group, $time)
 	{
-		// Chop up everything up until the relative path
-		$group = substr($group, strrpos($group, 'migrations/') + 11);
-
 		$class = ucwords(str_replace('/', ' ', $group));
 
 		// If group is empty then we want to avoid double underscore in the 
@@ -107,8 +104,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 	public function _generate_filename($group, $time, $description)
 	{
 		$description = substr(strtolower($description), 0, 100);
-
-		return $group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
+		return DOCROOT.Kohana::config('minion/migration')->default_path.$group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
 	}
 
 }
