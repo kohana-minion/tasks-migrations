@@ -65,6 +65,11 @@ class Minion_Task_Db_Generate extends Minion_Task
 			->set('description', $description)
 			->render();
 
+		if ( ! is_dir(dirname($file)))
+		{
+			mkdir(dirname($file), 0775, TRUE);
+		}
+
 		file_put_contents($file, $data);
 
 		return 'Migration generated in '.$file.PHP_EOL;
