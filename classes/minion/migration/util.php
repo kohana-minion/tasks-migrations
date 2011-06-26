@@ -61,9 +61,16 @@ class Minion_Migration_Util {
 		// path from the migrations folder to the migration file
 		$migration['group'] = dirname(substr($file, 11, -strlen(EXT)));
 
-		list($migration['timestamp'], $migration['description']) 
-			= explode('_', basename($file, EXT), 2);
-
+		if(strpos(basename($file), "_"))
+		{
+			list($migration['timestamp'], $migration['description']) 
+				= explode('_', basename($file, EXT), 2);
+		}
+		else
+		{
+			$migration['timestamp'] = basename($file, EXT);
+			$migration['description'] = "";
+		}
 		$migration['id'] = $migration['group'].':'.$migration['timestamp'];
 
 		return $migration;
@@ -79,7 +86,15 @@ class Minion_Migration_Util {
 	public static function get_filename_from_migration(array $migration)
 	{
 		$group  = $migration['group'];
-		$migration = $migration['timestamp'].'_'.$migration['description'];
+
+		if(!empty($migration['description']))
+		{
+			$migration = $migration['timestamp'].'_'.$migration['description'];
+		}
+		else
+		{
+			$migration = $migration['timestamp'];
+		}
 
 		$group = ( ! empty($group)) ? (rtrim($group, '/').'/') : '';
 
