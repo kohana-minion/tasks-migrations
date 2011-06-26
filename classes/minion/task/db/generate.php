@@ -35,7 +35,8 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	protected $_config = array(
 		'group',
-		'description'
+		'description',
+		'location'
 	);
 
 	/**
@@ -54,10 +55,16 @@ class Minion_Task_Db_Generate extends Minion_Task
 		$group    = $config['group'].'/';
 		$description = $config['description'];
 
+		if (empty($config['location']))
+		{
+			$config['location'] = APPPATH;
+		}
+		$location = rtrim(realpath($config['location']), '/').'/migrations/';
+
 		// {year}{month}{day}{hour}{minute}{second}
 		$time  = date('YmdHis');
 		$class = $this->_generate_classname($group, $time);
-		$file  = $this->_generate_filename($group, $time, $description);
+		$file  = $this->_generate_filename($location, $group, $time, $description);
 
 
 		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
@@ -106,10 +113,10 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 * @param  string Description
 	 * @return string Filename
 	 */
-	public function _generate_filename($group, $time, $description)
+	public function _generate_filename($location, $group, $time, $description)
 	{
 		$description = substr(strtolower($description), 0, 100);
-		return DOCROOT.Kohana::config('minion/migration')->default_path.$group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
+		return $location.$group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
 	}
 
 }
