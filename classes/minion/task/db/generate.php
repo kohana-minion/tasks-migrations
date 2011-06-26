@@ -54,10 +54,14 @@ class Minion_Task_Db_Generate extends Minion_Task
 
 		$config = array_merge($defaults, $config);
 
-		if (empty($config['group']))
+		// Trim slashes in group
+		$config['group'] = trim($config['group'], '/');
+
+		if ( ! $this->_valid_group($config['group']))
 		{
-			return 'Please provide --group'.PHP_EOL.
-			       'See help for more info'.PHP_EOL;
+			Minion_CLI::write('Please provide a valid --group');
+			Minion_CLI::write('See help for more info');
+			return;
 		}
 
 		$group = $config['group'].'/';
@@ -82,7 +86,8 @@ class Minion_Task_Db_Generate extends Minion_Task
 
 		file_put_contents($file, $data);
 
-		return 'Migration generated in '.$file.PHP_EOL;
+		Minion_CLI::write('Migration generated: '.$file);
+		return;
 	}
 
 	/**
@@ -127,6 +132,23 @@ class Minion_Task_Db_Generate extends Minion_Task
 		// If description was empty, trim underscores
 		$filename = trim($filename, '_');
 		return $filename.EXT;
+	}
+
+	protected function _valid_group($group)
+	{
+		// Group cannot be empty
+		if ( ! Valid::not_empty($group))
+			return FALSE;
+
+		// Can only consist of alpha-numeric values, dashes, underscores, and slashes
+		if (preg_match('/[^a-zA-Z0-9\/_-]/', $group))
+			return FALSE;
+
+		// Must also contain at least one alpha-numeric value
+		if ( ! preg_match('/[a-zA-Z0-9]/', $group))
+			return FALSE; // --group="/" breaks things but "a/b" should be allowed
+
+		return TRUE;
 	}
 
 }
