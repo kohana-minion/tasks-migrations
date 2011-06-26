@@ -46,9 +46,9 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	public function execute(array $config)
 	{
-		if (empty($config['group']) OR empty($config['description']))
+		if (empty($config['group']))
 		{
-			return 'Please provide --group and --description'.PHP_EOL.
+			return 'Please provide --group'.PHP_EOL.
 			       'See help for more info'.PHP_EOL;
 		}
 
