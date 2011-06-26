@@ -35,7 +35,8 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	protected $_config = array(
 		'group',
-		'description'
+		'description',
+		'location'
 	);
 
 	/**
@@ -45,25 +46,36 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	public function execute(array $config)
 	{
-		if (empty($config['group']) OR empty($config['description']))
+		if (empty($config['group']))
 		{
-			return 'Please provide --group and --description'.PHP_EOL.
+			return 'Please provide --group'.PHP_EOL.
 			       'See help for more info'.PHP_EOL;
 		}
 
-		$group    = rtrim(realpath($config['group']), '/').'/';
+		$group    = $config['group'].'/';
 		$description = $config['description'];
+
+		if (empty($config['location']))
+		{
+			$config['location'] = APPPATH;
+		}
+		$location = rtrim(realpath($config['location']), '/').'/migrations/';
 
 		// {year}{month}{day}{hour}{minute}{second}
 		$time  = date('YmdHis');
 		$class = $this->_generate_classname($group, $time);
-		$file  = $this->_generate_filename($group, $time, $description);
+		$file  = $this->_generate_filename($location, $group, $time, $description);
 
 
 		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
 			->set('class', $class)
 			->set('description', $description)
 			->render();
+
+		if ( ! is_dir(dirname($file)))
+		{
+			mkdir(dirname($file), 0775, TRUE);
+		}
 
 		file_put_contents($file, $data);
 
@@ -79,9 +91,6 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	protected function _generate_classname($group, $time)
 	{
-		// Chop up everything up until the relative path
-		$group = substr($group, strrpos($group, 'migrations/') + 11);
-
 		$class = ucwords(str_replace('/', ' ', $group));
 
 		// If group is empty then we want to avoid double underscore in the 
@@ -104,11 +113,10 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 * @param  string Description
 	 * @return string Filename
 	 */
-	public function _generate_filename($group, $time, $description)
+	public function _generate_filename($location, $group, $time, $description)
 	{
 		$description = substr(strtolower($description), 0, 100);
-
-		return $group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
+		return $location.$group.$time.'_'.preg_replace('~[^a-z]+~', '-', $description).EXT;
 	}
 
 }
