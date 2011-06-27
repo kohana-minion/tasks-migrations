@@ -20,7 +20,7 @@ class Minion_Migration_Database extends Database_MySQL {
 				$db_group = Database::$default;
 			}
 
-			$config = Kohana::config('database')->$db_group;
+			$config = Kohana::$config->load('database')->$db_group;
 		}
 
 		return new Minion_Migration_Database('__minion_faux', $config);

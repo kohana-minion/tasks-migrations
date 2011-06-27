@@ -33,7 +33,7 @@ abstract class Minion_Migration_Base {
 	 */
 	public function get_database_connection()
 	{
-		$config   = Kohana::config('minion/migration');
+		$config   = Kohana::$config->load('minion/migration');
 		$group = $this->_info['group'];
 
 		if (isset($config->group_connection[$group]))

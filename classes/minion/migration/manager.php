@@ -132,10 +132,10 @@ class Minion_Migration_Manager {
 
 		foreach ($migrations as $migration)
 		{
-			if ($method == 'down' AND $migration['timestamp'] <= Kohana::config('minion/migration')->lowest_migration)
+			if ($method == 'down' AND $migration['timestamp'] <= Kohana::$config->load('minion/migration')->lowest_migration)
 			{
 				Minion_CLI::write(
-					'You\'ve reached the lowest migration allowed by your config: '.Kohana::config('minion/migration')->lowest_migration,
+					'You\'ve reached the lowest migration allowed by your config: '.Kohana::$config->load('minion/migration')->lowest_migration,
 					'red'
 				);
 				return;

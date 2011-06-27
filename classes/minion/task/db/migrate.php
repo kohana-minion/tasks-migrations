@@ -67,7 +67,7 @@ class Minion_Task_Db_Migrate extends Minion_Task
 	 */
 	public function execute(array $config)
 	{
-		$k_config = Kohana::config('minion/migration');
+		$k_config = Kohana::$config->load('minion/migration');
 
 		$groups  = Arr::get($config, 'group', Arr::get($config, 'groups', NULL));
 		$target  = Arr::get($config, 'migrate-to',  NULL);
