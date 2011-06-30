@@ -12,7 +12,12 @@ class <?php echo $class; ?> extends Minion_Migration_Base {
 	 */
 	public function up(Kohana_Database $db)
 	{
+<?php if(!empty($up)): ?>
+<?php echo $up; ?>
+
+<?php else: ?>
 		// $db->query(NULL, 'CREATE TABLE ... ');
+<?php endif; ?>
 	}
 
 	/**
@@ -22,6 +27,11 @@ class <?php echo $class; ?> extends Minion_Migration_Base {
 	 */
 	public function down(Kohana_Database $db)
 	{
+<?php if(!empty($down)): ?>
+<?php echo $down; ?>
+
+<?php else: ?>
 		// $db->query(NULL, 'DROP TABLE ... ');
+<?php endif; ?>
 	}
 }

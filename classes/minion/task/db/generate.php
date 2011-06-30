@@ -58,7 +58,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 
 	}
 	
-	public function generate($config)
+	public function generate($config, $up = null, $down = null)
 	{
 		$defaults = array(
 			'location'    => APPPATH,
@@ -89,6 +89,8 @@ class Minion_Task_Db_Generate extends Minion_Task
 		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
 			->set('class', $class)
 			->set('description', $description)
+			->set('up', $up)
+			->set('down', $down)
 			->render();
 
 		if ( ! is_dir(dirname($file)))
