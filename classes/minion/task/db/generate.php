@@ -46,6 +46,20 @@ class Minion_Task_Db_Generate extends Minion_Task
 	 */
 	public function execute(array $config)
 	{
+		try
+		{
+			$file = $this->generate($config);
+			Minion_CLI::write('Migration generated: '.$file);	
+		}
+		catch(ErrorException $e)
+		{
+			Minion_CLI::write($e->getMessage());
+		}
+
+	}
+	
+	public function generate($config)
+	{
 		$defaults = array(
 			'location'    => APPPATH,
 			'description' => '',
@@ -59,9 +73,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 
 		if ( ! $this->_valid_group($config['group']))
 		{
-			Minion_CLI::write('Please provide a valid --group');
-			Minion_CLI::write('See help for more info');
-			return;
+			throw new ErrorException("Please provide a valid --group\nSee help for more info");
 		}
 
 		$group = $config['group'].'/';
@@ -86,8 +98,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 
 		file_put_contents($file, $data);
 
-		Minion_CLI::write('Migration generated: '.$file);
-		return;
+		return $file;
 	}
 
 	/**
