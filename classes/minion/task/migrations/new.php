@@ -1,21 +1,24 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * The generate task provides an easy way to create migration files
+ * The new task provides an easy way to create migration files
  *
  * Available config options are:
  *
- * --group=path/to/migration/group
+ * --group=group_name
  *
  *  This is a required config option, use it specify in which group the
- *  migration should be stored.  Due to the nature of the cascading filesystem
- *  minion doesn't automatically know where a migration is stored so make sure
- *  you pass in the full path to your migrations folder, e.g.
+ *  migration should be stored. Migrations are stored in a `migrations`
+ *  directory followed by the group name specified. By default, the `migrations`
+ *  directory is created in `APPPATH` but that can be changed with `--location`
  *
- *  # The group of the migrations folder is modules/myapp/migrations/myapp/
- *  --group=modules/myapp/migrations/myapp/
+ * --location=modules/auth
  *
- *  On nix based systems you should be able to tab complete the path
+ *  Specified the path of the migration (without the `migrations` directory).
+ *  This value is defaulted to `APPPATH`
+ *
+ *  # The migration will be created in `modules/myapp/migrations/myapp/`
+ *  --group=myapp --location=modules/myapp
  *
  * --description="Description of migration here"
  *
@@ -23,11 +26,9 @@
  *  filename.  It is required but can be changed manually later on without
  *  affecting the integrity of the migration.
  *
- *  The description will be
- *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Db_Generate extends Minion_Task
+class Minion_Task_Migrations_New extends Minion_Task
 {
 	/**
 	 * A set of config options that this task accepts
@@ -49,7 +50,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		try
 		{
 			$file = $this->generate($config);
-			Minion_CLI::write('Migration generated: '.$file);	
+			Minion_CLI::write('Migration generated: '.$file);
 		}
 		catch(ErrorException $e)
 		{
@@ -57,7 +58,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		}
 
 	}
-	
+
 	public function generate($config, $up = null, $down = null)
 	{
 		$defaults = array(
@@ -86,7 +87,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		$file = $this->_generate_filename($location, $group, $time, $description);
 
 
-		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
+		$data = Kohana::FILE_SECURITY.View::factory('minion/task/migrations/new/template')
 			->set('class', $class)
 			->set('description', $description)
 			->set('up', $up)

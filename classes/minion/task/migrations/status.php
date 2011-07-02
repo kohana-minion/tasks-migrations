@@ -7,7 +7,7 @@
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Db_Status extends Minion_Task {
+class Minion_Task_Migrations_Status extends Minion_Task {
 
 	/**
 	 * Execute the task
@@ -19,7 +19,7 @@ class Minion_Task_Db_Status extends Minion_Task {
 		$db        = Database::instance();
 		$model     = new Model_Minion_Migration($db);
 
-		$view = new View('minion/task/db/status');
+		$view = new View('minion/task/migrations/status');
 
 		$view->groups = $model->get_group_statuses();
 

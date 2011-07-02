@@ -1,21 +1,21 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * The Migrate task compares the current version of the database with the target 
- * version and then executes the necessary commands to bring the database up to 
+ * The Run task compares the current version of the database with the target
+ * version and then executes the necessary commands to bring the database up to
  * date
  *
  * Available config options are:
  *
- * --migrate-down
+ * --down
  *
  *   Migrate the group(s) down
  *
- * --migrate-up
+ * --up
  *
  *   Migrate the group(s) up
  *
- * --migrate-to=(timestamp|+up_migrations|down_migrations)
+ * --to=(timestamp|+up_migrations|down_migrations)
  *
  *   Migrate to a specific timestamp, or up $up_migrations, or down $down_migrations
  *
@@ -27,24 +27,24 @@
  *
  * --groups=group[,group2[,group3...]]
  *
- *   A list of groups that will be used to source migration files.  By default 
+ *   A list of groups that will be used to source migration files.  By default
  *   migrations will be loaded from all available groups.
  *
- *   Note, only --migrate-up and --migrate-down can be used with --groups
+ *   Note, only --up and --down can be used with --groups
  *
  * --dry-run
  *
- *  No value taken, if this is specified then instead of executing the SQL it 
+ *  No value taken, if this is specified then instead of executing the SQL it
  *  will be printed to the console
  *
  * --quiet
  *
- *  Suppress all unnecessary output.  If --dry-run is enabled then only dry run 
+ *  Suppress all unnecessary output.  If --dry-run is enabled then only dry run
  *  SQL will be output
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Db_Migrate extends Minion_Task
+class Minion_Task_Migrations_Run extends Minion_Task
 {
 	/**
 	 * A set of config options that this task accepts
@@ -53,9 +53,9 @@ class Minion_Task_Db_Migrate extends Minion_Task
 	protected $_config = array(
 		'group',
 		'groups',
-		'migrate-up',
-		'migrate-down',
-		'migrate-to',
+		'up',
+		'down',
+		'to',
 		'dry-run',
 		'quiet'
 	);
@@ -70,12 +70,12 @@ class Minion_Task_Db_Migrate extends Minion_Task
 		$k_config = Kohana::$config->load('minion/migration');
 
 		$groups  = Arr::get($config, 'group', Arr::get($config, 'groups', NULL));
-		$target  = Arr::get($config, 'migrate-to',  NULL);
+		$target  = Arr::get($config, 'to',  NULL);
 
 		$dry_run = array_key_exists('dry-run',      $config);
 		$quiet   = array_key_exists('quiet',        $config);
-		$up      = array_key_exists('migrate-up',   $config);
-		$down    = array_key_exists('migrate-down', $config);
+		$up      = array_key_exists('up',   $config);
+		$down    = array_key_exists('down', $config);
 
 		$groups  = $this->_parse_groups($groups);
 
@@ -110,12 +110,12 @@ class Minion_Task_Db_Migrate extends Minion_Task
 		}
 		catch(Minion_Migration_Exception $e)
 		{
-			return View::factory('minion/task/db/migrate/exception')
+			return View::factory('minion/task/migrations/run/exception')
 				->set('migration', $e->get_migration())
 				->set('error',     $e->getMessage());
 		}
 
-		$view = View::factory('minion/task/db/migrate')
+		$view = View::factory('minion/task/migrations/run')
 			->set('dry_run', $dry_run)
 			->set('quiet', $quiet)
 			->set('dry_run_sql', $manager->get_dry_run_sql())
