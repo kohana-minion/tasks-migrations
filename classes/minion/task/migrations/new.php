@@ -5,25 +5,26 @@
  *
  * Available config options are:
  *
- * --group=path/to/migration/group
+ * --group=group_name
  *
  *  This is a required config option, use it specify in which group the
- *  migration should be stored.  Due to the nature of the cascading filesystem
- *  minion doesn't automatically know where a migration is stored so make sure
- *  you pass in the full path to your migrations folder, e.g.
+ *  migration should be stored. Migrations are stored in a `migrations`
+ *  directory followed by the group name specified. By default, the `migrations`
+ *  directory is created in `APPPATH` but that can be changed with `--location`
  *
- *  # The group of the migrations folder is modules/myapp/migrations/myapp/
- *  --group=modules/myapp/migrations/myapp/
+ * --location=modules/auth
  *
- *  On nix based systems you should be able to tab complete the path
+ *  Specified the path of the migration (without the `migrations` directory).
+ *  This value is defaulted to `APPPATH`
+ *
+ *  # The migration will be created in `modules/myapp/migrations/myapp/`
+ *  --group=myapp --location=modules/myapp
  *
  * --description="Description of migration here"
  *
  *  This is an arbitrary description of the migration, used to build the
  *  filename.  It is required but can be changed manually later on without
  *  affecting the integrity of the migration.
- *
- *  The description will be
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
