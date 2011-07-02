@@ -511,6 +511,9 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 				),
 				array(
 					'migrations/myapp' => array(
+						// This file should be ignored
+						'migrations/myapp/015151051_setup.sql'
+							=> '/var/www/app/groups/myapp/migrations/myapp/015151051_setup.sql',
 						'migrations/myapp/015151051_setup.php'
 							=> '/var/www/app/groups/myapp/migrations/myapp/015151051_setup.php',
 						'migrations/myapp/015161051_add-comments.php'
