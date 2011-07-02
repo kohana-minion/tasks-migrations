@@ -60,6 +60,10 @@ class Model_Minion_Migration extends Model
 			}
 			else
 			{
+				// Skip files without an extension of EXT
+				if ('.'.pathinfo($file, PATHINFO_EXTENSION) !== EXT)
+					continue;
+
 				$migration = $this->get_migration_from_filename($file);
 
 				$migrations[$migration['group'].':'.$migration['timestamp']] = $migration;
