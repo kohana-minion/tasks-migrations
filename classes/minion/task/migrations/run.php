@@ -7,15 +7,15 @@
  *
  * Available config options are:
  *
- * --migrate-down
+ * --down
  *
  *   Migrate the group(s) down
  *
- * --migrate-up
+ * --up
  *
  *   Migrate the group(s) up
  *
- * --migrate-to=(timestamp|+up_migrations|down_migrations)
+ * --to=(timestamp|+up_migrations|down_migrations)
  *
  *   Migrate to a specific timestamp, or up $up_migrations, or down $down_migrations
  *
@@ -30,7 +30,7 @@
  *   A list of groups that will be used to source migration files.  By default
  *   migrations will be loaded from all available groups.
  *
- *   Note, only --migrate-up and --migrate-down can be used with --groups
+ *   Note, only --up and --down can be used with --groups
  *
  * --dry-run
  *
