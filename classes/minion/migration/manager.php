@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * The migration manager is responsible for locating migration files, syncing 
- * them with the migrations table in the database and selecting any migrations 
+ * The migration manager is responsible for locating migration files, syncing
+ * them with the migrations table in the database and selecting any migrations
  * that need to be executed in order to reach a target version
  *
  * @author Matt Button <matthew@sigswitch.com>
@@ -58,7 +58,7 @@ class Minion_Migration_Manager {
 
 	/**
 	 * Set the database connection to be used
-	 * 
+	 *
 	 * @param Kohana_Database Database connection
 	 * @return Minion_Migration_Manager
 	 */
@@ -96,7 +96,7 @@ class Minion_Migration_Manager {
 	}
 
 	/**
-	 * Returns a set of queries that would've been executed had dry run not been 
+	 * Returns a set of queries that would've been executed had dry run not been
 	 * enabled.  If dry run was not enabled, this returns an empty array
 	 *
 	 * @return array SQL Queries
@@ -141,20 +141,20 @@ class Minion_Migration_Manager {
 				return;
 			}
 
-			$filename  = Minion_Migration_Util::get_filename_from_migration($migration);
+			$filename  = $this->_model->get_filename_from_migration($migration);
 
 			if ( ! ($file  = Kohana::find_file('migrations', $filename, FALSE)))
 			{
 				throw new Kohana_Exception(
-					'Cannot load migration :migration (:file)', 
+					'Cannot load migration :migration (:file)',
 					array(
-						':migration' => $migration['id'], 
+						':migration' => $migration['id'],
 						':file'      => $filename
 					)
 				);
 			}
 
-			$class = Minion_Migration_Util::get_class_from_migration($migration);
+			$class = $this->_model->get_class_from_migration($migration);
 
 			include_once $file;
 
@@ -162,7 +162,7 @@ class Minion_Migration_Manager {
 
 			$db = $this->_get_db_instance($instance->get_database_connection());
 
-			try 
+			try
 			{
 				$instance->$method($db);
 			}
@@ -204,7 +204,7 @@ class Minion_Migration_Manager {
 			// If this migration has since been deleted
 			if (isset($installed[$migration]) AND ! isset($available[$migration]))
 			{
-				// We should only delete a record of this migration if it does 
+				// We should only delete a record of this migration if it does
 				// not exist in the "real world"
 				if ($installed[$migration]['applied'] === '0')
 				{
@@ -216,7 +216,7 @@ class Minion_Migration_Manager {
 			{
 				$this->_model->add_migration($available[$migration]);
 			}
-			// Somebody changed the description of the migration, make sure we 
+			// Somebody changed the description of the migration, make sure we
 			// update it in the db as we use this to build the filename!
 			elseif ($installed[$migration]['description'] !== $available[$migration]['description'])
 			{
