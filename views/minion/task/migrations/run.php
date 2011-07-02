@@ -2,7 +2,7 @@
 Executed <?php echo count($executed_migrations); ?> migrations
 
 Current versions of groups:
-<?php echo new View('minion/task/db/status', array('groups' => $group_versions)) ?>
+<?php echo new View('minion/task/migrations/status', array('groups' => $group_versions)) ?>
 
 <?php if($dry_run): ?>
 This was a dry run, if it was a real run the following SQL would've been executed:
