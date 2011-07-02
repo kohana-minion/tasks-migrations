@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * The Migrate task compares the current version of the database with the target 
- * version and then executes the necessary commands to bring the database up to 
+ * The Run task compares the current version of the database with the target
+ * version and then executes the necessary commands to bring the database up to
  * date
  *
  * Available config options are:
@@ -27,24 +27,24 @@
  *
  * --groups=group[,group2[,group3...]]
  *
- *   A list of groups that will be used to source migration files.  By default 
+ *   A list of groups that will be used to source migration files.  By default
  *   migrations will be loaded from all available groups.
  *
  *   Note, only --migrate-up and --migrate-down can be used with --groups
  *
  * --dry-run
  *
- *  No value taken, if this is specified then instead of executing the SQL it 
+ *  No value taken, if this is specified then instead of executing the SQL it
  *  will be printed to the console
  *
  * --quiet
  *
- *  Suppress all unnecessary output.  If --dry-run is enabled then only dry run 
+ *  Suppress all unnecessary output.  If --dry-run is enabled then only dry run
  *  SQL will be output
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Db_Migrate extends Minion_Task
+class Minion_Task_Migrations_Run extends Minion_Task
 {
 	/**
 	 * A set of config options that this task accepts
@@ -110,12 +110,12 @@ class Minion_Task_Db_Migrate extends Minion_Task
 		}
 		catch(Minion_Migration_Exception $e)
 		{
-			return View::factory('minion/task/db/migrate/exception')
+			return View::factory('minion/task/migrations/run/exception')
 				->set('migration', $e->get_migration())
 				->set('error',     $e->getMessage());
 		}
 
-		$view = View::factory('minion/task/db/migrate')
+		$view = View::factory('minion/task/migrations/run')
 			->set('dry_run', $dry_run)
 			->set('quiet', $quiet)
 			->set('dry_run_sql', $manager->get_dry_run_sql())

@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * The generate task provides an easy way to create migration files
+ * The new task provides an easy way to create migration files
  *
  * Available config options are:
  *
@@ -27,7 +27,7 @@
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Db_Generate extends Minion_Task
+class Minion_Task_Migrations_New extends Minion_Task
 {
 	/**
 	 * A set of config options that this task accepts
@@ -49,7 +49,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		try
 		{
 			$file = $this->generate($config);
-			Minion_CLI::write('Migration generated: '.$file);	
+			Minion_CLI::write('Migration generated: '.$file);
 		}
 		catch(ErrorException $e)
 		{
@@ -57,7 +57,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		}
 
 	}
-	
+
 	public function generate($config, $up = null, $down = null)
 	{
 		$defaults = array(
@@ -86,7 +86,7 @@ class Minion_Task_Db_Generate extends Minion_Task
 		$file = $this->_generate_filename($location, $group, $time, $description);
 
 
-		$data = Kohana::FILE_SECURITY.View::factory('minion/task/db/generate/template')
+		$data = Kohana::FILE_SECURITY.View::factory('minion/task/migrations/new/template')
 			->set('class', $class)
 			->set('description', $description)
 			->set('up', $up)
