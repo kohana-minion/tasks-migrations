@@ -110,9 +110,11 @@ class Minion_Task_Migrations_Run extends Minion_Task
 		}
 		catch(Minion_Migration_Exception $e)
 		{
-			return View::factory('minion/task/migrations/run/exception')
+			echo View::factory('minion/task/migrations/run/exception')
 				->set('migration', $e->get_migration())
 				->set('error',     $e->getMessage());
+
+			exit(2);
 		}
 
 		$view = View::factory('minion/task/migrations/run')
