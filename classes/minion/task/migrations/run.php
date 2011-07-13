@@ -114,7 +114,7 @@ class Minion_Task_Migrations_Run extends Minion_Task
 				->set('migration', $e->get_migration())
 				->set('error',     $e->getMessage());
 
-			exit(2);
+			throw $e;
 		}
 
 		$view = View::factory('minion/task/migrations/run')
