@@ -525,11 +525,11 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	}
 
 	/**
-	 * Test that Minion_Migration_Util::compile_migrations_from_files accurately
+	 * Test that Model_Minion_Migration::compile_migrations_from_files accurately
 	 * compiles a set of files down into a set of migration files
 	 *
 	 * @test
-	 * @covers Minion_Migration_Util::compile_migrations_from_files
+	 * @covers Model_Minion_Migration::compile_migrations_from_files
 	 * @dataProvider provider_compile_migrations_from_files
 	 * @param array Expected output
 	 * @param array Input Files
@@ -563,11 +563,11 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	}
 
 	/**
-	 * Tests that Minion_Migration_Util::get_migration_info_from_filename()
+	 * Tests that Model_Minion_Migration::get_migration_info_from_filename()
 	 * correctly extracts information about the migration from its filename
 	 *
 	 * @test
-	 * @covers Minion_Migration_Util::get_migration_from_filename
+	 * @covers Model_Minion_Migration::get_migration_from_filename
 	 * @dataProvider provider_get_migration_from_filename
 	 * @param array Expected output
 	 * @param string Input filename
@@ -602,11 +602,11 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	}
 
 	/**
-	 * Tests that Minion_Migration_Util::get_filename_from_migration generates
+	 * Tests that Model_Minion_Migration::get_filename_from_migration generates
 	 * accurate filenames when given a variety of migration information
 	 *
 	 * @test
-	 * @covers Minion_Migration_Util::get_filename_from_migration
+	 * @covers Model_Minion_Migration::get_filename_from_migration
 	 * @dataProvider   provider_get_filename_from_migration
 	 * @param  string  Expected output
 	 * @param  mixed   Migration id
@@ -640,11 +640,11 @@ class Minion_Migration_ModelTest extends Kohana_Unittest_Database_TestCase
 	}
 
 	/**
-	 * Tests that Minion_Migration_Util::get_class_from_migration can generate
+	 * Tests that Model_Minion_Migration::get_class_from_migration can generate
 	 * a class name from information about a migration
 	 *
 	 * @test
-	 * @covers Minion_Migration_Util::get_class_from_migration
+	 * @covers Model_Minion_Migration::get_class_from_migration
 	 * @dataProvider provider_get_class_from_migration
 	 * @param string Expected output
 	 * @param string|array Migration info
