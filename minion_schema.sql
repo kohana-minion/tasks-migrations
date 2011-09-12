@@ -5,4 +5,4 @@ CREATE TABLE `minion_migrations` (
   `applied` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`timestamp`,`group`),
   UNIQUE KEY `MIGRATION_ID` (`timestamp`,`description`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
