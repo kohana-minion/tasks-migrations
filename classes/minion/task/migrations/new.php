@@ -87,7 +87,8 @@ class Minion_Task_Migrations_New extends Minion_Task
 		$file = $this->_generate_filename($location, $group, $time, $description);
 
 
-		$data = Kohana::FILE_SECURITY.View::factory('minion/task/migrations/new/template')
+		$data = Kohana::FILE_SECURITY.PHP_EOL.
+		View::factory('minion/task/migrations/new/template')
 			->set('class', $class)
 			->set('description', $description)
 			->set('up', $up)

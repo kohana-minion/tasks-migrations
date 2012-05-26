@@ -1,3 +1,4 @@
+
 <?php if(!empty($description)): ?>
 /**
  * <?php echo $description.PHP_EOL; ?>
@@ -8,7 +9,7 @@ class <?php echo $class; ?> extends Minion_Migration_Base {
 	/**
 	 * Run queries needed to apply this migration
 	 *
-	 * @param Kohana_Database Database connection
+	 * @param Kohana_Database $db Database connection
 	 */
 	public function up(Kohana_Database $db)
 	{
@@ -23,7 +24,7 @@ class <?php echo $class; ?> extends Minion_Migration_Base {
 	/**
 	 * Run queries needed to remove this migration
 	 *
-	 * @param Kohana_Database Database connection
+	 * @param Kohana_Database $db Database connection
 	 */
 	public function down(Kohana_Database $db)
 	{
