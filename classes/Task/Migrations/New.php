@@ -28,16 +28,16 @@
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Minion_Task_Migrations_New extends Minion_Task
+class Task_Migrations_New extends Minion_Task
 {
 	/**
 	 * A set of config options that this task accepts
 	 * @var array
 	 */
 	protected $_options = array(
+		'location'    => APPPATH,
+		'description' => '',
 		'group'       => NULL,
-		'description' => NULL,
-		'location'    => NULL,
 	);
 
 	/**
@@ -61,14 +61,6 @@ class Minion_Task_Migrations_New extends Minion_Task
 
 	public function generate($options, $up = null, $down = null)
 	{
-		$defaults = array(
-			'location'    => APPPATH,
-			'description' => '',
-			'group'       => NULL,
-		);
-
-		$options = array_merge($defaults, $options);
-
 		// Trim slashes in group
 		$options['group'] = trim($options['group'], '/');
 
