@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * The Run task compares the current version of the database with the target
@@ -44,8 +44,8 @@
  *
  * @author Matt Button <matthew@sigswitch.com>
  */
-class Task_Migrations_Run extends Minion_Task
-{
+class Task_Migrations_Run extends Minion_Task {
+
 	/**
 	 * A set of config options that this task accepts
 	 * @var array
@@ -63,12 +63,10 @@ class Task_Migrations_Run extends Minion_Task
 	/**
 	 * Migrates the database to the version specified
 	 *
-	 * @param array Configuration to use
+	 * @param array $options Configuration to use
 	 */
 	protected function _execute(array $options)
 	{
-		$k_config = Kohana::$config->load('minion/migration');
-
 		$groups  = $options['group'];
 		$target  = $options['to'];
 
@@ -91,15 +89,15 @@ class Task_Migrations_Run extends Minion_Task
 			}
 		}
 
-		$db        = Database::instance();
-		$model     = new Model_Minion_Migration($db);
+		$db    = Database::instance();
+		$model = new Model_Minion_Migration($db);
 
 		$model->ensure_table_exists();
 
 		$manager = new Minion_Migration_Manager($db, $model);
 
+		// Sync the available migrations with those in the db
 		$manager
-			// Sync the available migrations with those in the db
 			->sync_migration_files()
 			->set_dry_run($dry_run);
 
@@ -108,7 +106,7 @@ class Task_Migrations_Run extends Minion_Task
 			// Run migrations for specified groups & versions
 			$manager->run_migration($groups, $target);
 		}
-		catch(Minion_Migration_Exception $e)
+		catch (Minion_Migration_Exception $e)
 		{
 			echo View::factory('minion/task/migrations/run/exception')
 				->set('migration', $e->get_migration())
@@ -130,8 +128,8 @@ class Task_Migrations_Run extends Minion_Task
 	/**
 	 * Parses a comma delimited set of groups and returns an array of them
 	 *
-	 * @param  string Comma delimited string of groups
-	 * @return array  Locations
+	 * @param  string $group Comma delimited string of groups
+	 * @return array         Locations
 	 */
 	protected function _parse_groups($group)
 	{
@@ -168,8 +166,8 @@ class Task_Migrations_Run extends Minion_Task
 	 *
 	 *    {group}:(TRUE|FALSE|{migration_id})
 	 *
-	 * @param  string Target version(s) specified by user
-	 * @return array  Versions
+	 * @param  string $versions Target version(s) specified by user
+	 * @return array            Versions
 	 */
 	protected function _parse_target_versions($versions)
 	{
@@ -205,8 +203,8 @@ class Task_Migrations_Run extends Minion_Task
 	/*
 	 * Helper function for parsing target versions in user input
 	 *
-	 * @param  string         Input migration target
-	 * @return boolean|string The parsed target
+	 * @param  string $version Input migration target
+	 * @return boolean|string  The parsed target
 	 */
 	protected function _parse_version($version)
 	{
@@ -221,4 +219,5 @@ class Task_Migrations_Run extends Minion_Task
 
 		throw new Kohana_Exception('Invalid target version :version', array(':version' => $version));
 	}
+
 }
