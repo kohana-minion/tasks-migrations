@@ -50,14 +50,14 @@ class Minion_Task_Migrations_Run extends Minion_Task
 	 * A set of config options that this task accepts
 	 * @var array
 	 */
-	protected $_config = array(
-		'group',
-		'groups',
-		'up',
-		'down',
-		'to',
-		'dry-run',
-		'quiet'
+	protected $_options = array(
+		'group'   => NULL,
+		'groups'  => NULL,
+		'up'      => NULL,
+		'down'    => NULL,
+		'to'      => NULL,
+		'dry-run' => NULL,
+		'quiet'   => NULL,
 	);
 
 	/**
@@ -65,17 +65,17 @@ class Minion_Task_Migrations_Run extends Minion_Task
 	 *
 	 * @param array Configuration to use
 	 */
-	public function execute(array $config)
+	protected function _execute(array $options)
 	{
 		$k_config = Kohana::$config->load('minion/migration');
 
-		$groups  = Arr::get($config, 'group', Arr::get($config, 'groups', NULL));
-		$target  = Arr::get($config, 'to',  NULL);
+		$groups  = Arr::get($options, 'group', Arr::get($options, 'groups', NULL));
+		$target  = Arr::get($options, 'to',  NULL);
 
-		$dry_run = array_key_exists('dry-run',      $config);
-		$quiet   = array_key_exists('quiet',        $config);
-		$up      = array_key_exists('up',   $config);
-		$down    = array_key_exists('down', $config);
+		$dry_run = array_key_exists('dry-run',      $options);
+		$quiet   = array_key_exists('quiet',        $options);
+		$up      = array_key_exists('up',   $options);
+		$down    = array_key_exists('down', $options);
 
 		$groups  = $this->_parse_groups($groups);
 

@@ -34,10 +34,10 @@ class Minion_Task_Migrations_New extends Minion_Task
 	 * A set of config options that this task accepts
 	 * @var array
 	 */
-	protected $_config = array(
-		'group',
-		'description',
-		'location'
+	protected $_options = array(
+		'group'       => NULL,
+		'description' => NULL,
+		'location'    => NULL,
 	);
 
 	/**
@@ -45,11 +45,11 @@ class Minion_Task_Migrations_New extends Minion_Task
 	 *
 	 * @param array Configuration
 	 */
-	public function execute(array $config)
+	protected function _execute(array $options)
 	{
 		try
 		{
-			$file = $this->generate($config);
+			$file = $this->generate($options);
 			Minion_CLI::write('Migration generated: '.$file);
 		}
 		catch(ErrorException $e)
@@ -59,7 +59,7 @@ class Minion_Task_Migrations_New extends Minion_Task
 
 	}
 
-	public function generate($config, $up = null, $down = null)
+	public function generate($options, $up = null, $down = null)
 	{
 		$defaults = array(
 			'location'    => APPPATH,
@@ -67,19 +67,19 @@ class Minion_Task_Migrations_New extends Minion_Task
 			'group'       => NULL,
 		);
 
-		$config = array_merge($defaults, $config);
+		$options = array_merge($defaults, $options);
 
 		// Trim slashes in group
-		$config['group'] = trim($config['group'], '/');
+		$options['group'] = trim($options['group'], '/');
 
-		if ( ! $this->_valid_group($config['group']))
+		if ( ! $this->_valid_group($options['group']))
 		{
 			throw new ErrorException("Please provide a valid --group\nSee help for more info");
 		}
 
-		$group = $config['group'].'/';
-		$description = $config['description'];
-		$location = rtrim(realpath($config['location']), '/').'/migrations/';
+		$group = $options['group'].'/';
+		$description = $options['description'];
+		$location = rtrim(realpath($options['location']), '/').'/migrations/';
 
 		// {year}{month}{day}{hour}{minute}{second}
 		$time = date('YmdHis');

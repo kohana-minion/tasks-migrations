@@ -14,7 +14,7 @@ class Minion_Task_Migrations_Status extends Minion_Task {
 	 *
 	 * @param array Config for the task
 	 */
-	public function execute(array $config)
+	protected function _execute(array $options)
 	{
 		$db        = Database::instance();
 		$model     = new Model_Minion_Migration($db);
