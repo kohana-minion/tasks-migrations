@@ -1,9 +1,9 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * The base migration class, must be extended by all migration files
  *
- * Each migration file must implement an up() and a down() which are used to 
+ * Each migration file must implement an up() and a down() which are used to
  * apply / remove this migration from the schema respectively
  *
  * @author Matt Button <matthew@sigswitch.com>
@@ -19,7 +19,7 @@ abstract class Minion_Migration_Base {
 	/**
 	 * Constructs the migration
 	 *
-	 * @param array Information about this migration
+	 * @param array $info Information about this migration
 	 */
 	public function __construct(array $info)
 	{
@@ -33,8 +33,8 @@ abstract class Minion_Migration_Base {
 	 */
 	public function get_database_connection()
 	{
-		$config   = Kohana::$config->load('minion/migration');
-		$group = $this->_info['group'];
+		$config = Kohana::$config->load('minion/migration');
+		$group  = $this->_info['group'];
 
 		if (isset($config->group_connection[$group]))
 		{
@@ -47,14 +47,15 @@ abstract class Minion_Migration_Base {
 	/**
 	 * Runs any SQL queries necessary to bring the database up a migration version
 	 *
-	 * @param Kohana_Database The database connection to perform actions on
+	 * @param Kohana_Database $db The database connection to perform actions on
 	 */
 	abstract public function up(Kohana_Database $db);
 
 	/**
 	 * Runs any SQL queries necessary to bring the database schema down a version
 	 *
-	 * @param Kohana_Database The database connection to perform actions on
+	 * @param Kohana_Database $db The database connection to perform actions on
 	 */
 	abstract public function down(Kohana_Database $db);
+
 }

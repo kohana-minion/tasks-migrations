@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * The migration manager is responsible for locating migration files, syncing
@@ -10,7 +10,7 @@
 class Minion_Migration_Manager {
 
 	/**
-	 * The database connection that sould be used
+	 * The database connection that should be used
 	 * @var Kohana_Database
 	 */
 	protected $_db;
@@ -38,12 +38,11 @@ class Minion_Migration_Manager {
 	 */
 	protected $_executed_migrations = array();
 
-
 	/**
 	 * Constructs the object, allows injection of a Database connection
 	 *
-	 * @param Kohana_Database        The database connection that should be passed to migrations
-	 * @param Model_Minion_Migration Inject an instance of the minion model into the manager
+	 * @param Kohana_Database        $db    The database connection that should be passed to migrations
+	 * @param Model_Minion_Migration $model Inject an instance of the minion model into the manager
 	 */
 	public function __construct(Kohana_Database $db, Model_Minion_Migration $model = NULL)
 	{
@@ -59,7 +58,7 @@ class Minion_Migration_Manager {
 	/**
 	 * Set the database connection to be used
 	 *
-	 * @param Kohana_Database Database connection
+	 * @param  Kohana_Database $db Database connection
 	 * @return Minion_Migration_Manager
 	 */
 	public function set_db(Kohana_Database $db)
@@ -72,7 +71,7 @@ class Minion_Migration_Manager {
 	/**
 	 * Set the model to be used in the rest of the app
 	 *
-	 * @param Model_Minion_Migration Model instance
+	 * @param  Model_Minion_Migration $model Model instance
 	 * @return Minion_Migration_Manager
 	 */
 	public function set_model(Model_Minion_Migration $model)
@@ -85,7 +84,7 @@ class Minion_Migration_Manager {
 	/**
 	 * Set whether the manager should execute a dry run instead of a real run
 	 *
-	 * @param boolean Whether we should do a dry run
+	 * @param  boolean $dry_run Whether we should do a dry run
 	 * @return Minion_Migration_Manager
 	 */
 	public function set_dry_run($dry_run)
@@ -97,7 +96,7 @@ class Minion_Migration_Manager {
 
 	/**
 	 * Returns a set of queries that would've been executed had dry run not been
-	 * enabled.  If dry run was not enabled, this returns an empty array
+	 * enabled. If dry run was not enabled, this returns an empty array
 	 *
 	 * @return array SQL Queries
 	 */
@@ -120,9 +119,9 @@ class Minion_Migration_Manager {
 	 *
 	 *
 	 *
-	 * @param  array   Set of groups to update, empty array means all
-	 * @param  array   Versions for specified groups
-	 * @return array   Array of all migrations that were successfully applied
+	 * @param  array $group  Set of groups to update, empty array means all
+	 * @param  array $target Versions for specified groups
+	 * @return array         Array of all migrations that were successfully applied
 	 */
 	public function run_migration($group = array(), $target = TRUE)
 	{
@@ -141,7 +140,7 @@ class Minion_Migration_Manager {
 				return;
 			}
 
-			$filename  = $this->_model->get_filename_from_migration($migration);
+			$filename = $this->_model->get_filename_from_migration($migration);
 
 			if ( ! ($file  = Kohana::find_file('migrations', $filename, FALSE)))
 			{
@@ -166,7 +165,7 @@ class Minion_Migration_Manager {
 			{
 				$instance->$method($db);
 			}
-			catch(Database_Exception $e)
+			catch (Database_Exception $e)
 			{
 				throw new Minion_Migration_Exception($e->getMessage(), $migration);
 			}
@@ -230,8 +229,8 @@ class Minion_Migration_Manager {
 	/**
 	 * Gets a database connection for running the migrations
 	 *
-	 * @param  string Database connection group name
-	 * @return Kohana_Database Database connection
+	 * @param  string $db_group Database connection group name
+	 * @return Kohana_Database  Database connection
 	 */
 	protected function _get_db_instance($db_group)
 	{
@@ -241,4 +240,5 @@ class Minion_Migration_Manager {
 
 		return Minion_Migration_Database::faux_instance($db_group);
 	}
+
 }
