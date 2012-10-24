@@ -8,6 +8,11 @@ return array(
 	),
 
 	/**
+	 * The table used to store migrations
+	 */
+	'table' => 'minion_migrations',
+
+	/**
 	 * This specifies which migration should be the "base", in timestamp form.
 	 * This migration will not be run when --migrate-down is called
 	 * 
