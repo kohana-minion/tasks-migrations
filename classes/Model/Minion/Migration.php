@@ -15,7 +15,7 @@ class Model_Minion_Migration extends Model
 	 * The table that's used to store the migrations
 	 * @var string
 	 */
-	protected $_table = 'minion_migrations';
+	protected $_table;
 
 	/**
 	 * Constructs the model, taking a Database connection as the first and only
@@ -26,6 +26,8 @@ class Model_Minion_Migration extends Model
 	public function __construct(Kohana_Database $db)
 	{
 		$this->_db = $db;
+
+		$this->_table = Kohana::$config->load('minion/migration.table');
 	}
 
 	/**
@@ -170,7 +172,9 @@ class Model_Minion_Migration extends Model
 
 		if ( ! count($query))
 		{
-			$sql = file_get_contents(Kohana::find_file('', 'minion_schema', 'sql'));
+			$sql = View::factory('minion/task/migrations/schema')
+				->set('table_name', $this->_table)
+				->render();
 
 			$this->_db->query(NULL, $sql);
 		}
