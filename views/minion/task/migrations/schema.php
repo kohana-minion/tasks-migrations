@@ -1,4 +1,4 @@
-CREATE TABLE `<? echo $table_name; ?>` (
+CREATE TABLE `<?php echo $table_name; ?>` (
 	`timestamp` varchar(14) NOT NULL,
 	`description` varchar(100) NOT NULL,
 	`group` varchar(100) NOT NULL,
