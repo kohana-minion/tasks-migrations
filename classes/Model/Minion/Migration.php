@@ -172,7 +172,7 @@ class Model_Minion_Migration extends Model
 		if ( ! count($query))
 		{
 			$sql = View::factory('minion/task/migrations/schema')
-				->set('table_name', $this->_table)
+				->set('table_name', $this->_db->table_prefix() . $this->_table)
 				->render();
 
 			$this->_db->query(NULL, $sql);
