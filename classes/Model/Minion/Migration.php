@@ -167,12 +167,13 @@ class Model_Minion_Migration extends Model
 	 */
 	public function ensure_table_exists()
 	{
-		$query = $this->_db->query(Database::SELECT, "SHOW TABLES like '".$this->_table."'");
+        $table = $this->_db->table_prefix() . $this->_table;
+		$query = $this->_db->query(Database::SELECT, "SHOW TABLES like '".$table."'");
 
 		if ( ! count($query))
 		{
 			$sql = View::factory('minion/task/migrations/schema')
-				->set('table_name', $this->_db->table_prefix() . $this->_table)
+				->set('table_name', $table)
 				->render();
 
 			$this->_db->query(NULL, $sql);
