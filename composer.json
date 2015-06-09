@@ -1,5 +1,6 @@
 {
 	"name":        "kohana-minion/tasks-migrations",
+	"type":        "kohana-module",
 	"description": "Migration tasks for the kohana-minion cli framework",
 	"homepage":    "https://github.com/kohana-minion/tasks-migrations",
 	"license":     "BSD-3-Clause",
